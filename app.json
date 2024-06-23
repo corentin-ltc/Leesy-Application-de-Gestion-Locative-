@@ -16,6 +16,10 @@
       ]
     ],
     "name": "leesy1",
-    "slug": "leesy1"
+    "slug": "leesy1",
+    "userInterfaceStyle": "automatic",
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
