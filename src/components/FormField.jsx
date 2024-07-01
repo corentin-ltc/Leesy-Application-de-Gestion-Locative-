@@ -10,12 +10,13 @@ const FormField = ({title, value, placeholder,
       <Text className="text-base text-gray-100 
       font-pmedium">{title}</Text>
       <View className="border-2 border-black-200 w-full h-16 
-      px-4 rounded-2xl flex-row focus:border-secondary items-center" style={{backgroundColor: '#1b1f1d'}}> 
+      px-4 rounded-2xl focus:border-secondary items-center flex-row " style={{backgroundColor: '#1b1f1d'}}> 
       <TextInput className="flex-1 text-white font-psemibold text-base"
         value={value}
           placeholder={placeholder}
           placeholderTextColor="7b7b8b"
           onChangeText={handleChangeText}
+          textContentType='oneTimeCode'
           secureTextEntry={title === 'Mot de passe' && !showPassword}
           />
 
