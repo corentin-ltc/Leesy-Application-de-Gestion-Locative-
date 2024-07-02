@@ -13,13 +13,13 @@
         {
           "origin": "https://n"
         }
-      ]
+      ],
+      "expo-apple-authentication"
     ],
-    "name": "leesy1",
-    "slug": "leesy1",
-    "userInterfaceStyle": "automatic",
-    "experiments": {
-      "typedRoutes": true
+    "name": "letzgoo",
+    "slug": "letzgoo"
+  },
+  "ios": {
+      "usesAppleSignIn": true
     }
-  }
 }
