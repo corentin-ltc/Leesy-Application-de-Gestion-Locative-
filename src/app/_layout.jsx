@@ -37,13 +37,13 @@ const RootLayout = () => {
   return (
     <GestureHandlerRootView>
     <BottomSheetModalProvider>
-      <Stack>
+      <Stack className="bg-secondary" screenOptions={{ headerShadowVisible: false }}>
         <Stack.Screen name = "index" options={{ headerShown: false}} />
         <Stack.Screen name = "(auth)" options={{ headerShown: false}} />
         <Stack.Screen name = "(tabs)" options={{
            headerLeft: () => (
-            <View className="ml-7 mb-3">
-              <Text className="font-psemibold text-gray">Level 4</Text>
+            <View className="ml-4 mb-3 border-0 items-center justify-center">
+              <Text className="font-psemibold ml-1 text-gray">Niveau 4</Text>
               <View className="rounded-xl border-2 h-4 w-14 overflow-hidden bg-gray border-gray">
                 <View className="h-full w-2/4 bg-yellow-500 rounded-l-xl">
                 </View>
@@ -51,7 +51,8 @@ const RootLayout = () => {
             </View>
           ),
            headerStyle: {
-            backgroundColor:'#32533d'
+            backgroundColor:'#32533d',
+            borderBottomWidth: 0,
            },
            headerTitle: () =>(
             <View></View>
