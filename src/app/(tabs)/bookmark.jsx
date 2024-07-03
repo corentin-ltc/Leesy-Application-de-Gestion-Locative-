@@ -1,9 +1,47 @@
-import { View, Text , StyleSheet} from 'react-native'
-import React from 'react'
+import GoodCard from '../../components/GoodCard';
+import "react-native-gesture-handler";
+import { StatusBar } from "expo-status-bar";
+import {
+  Button,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  useWindowDimensions,
+  View,
+  Image,
+} from "react-native";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+import { useRef, useState } from "react";
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
+import { Auth } from "../../components/Auth"
+import { SafeAreaView } from "react-native-safe-area-context";
+import { images } from "../../constants"
 
 
-const Bookmark = () => {
+export default function Bookmark() {
+  const [device, setDevice] = useState(false);
+  const { width } = useWindowDimensions();
+  const [theme, setTheme] = useState("dim");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const bottomSheetModalRef = useRef(null);
+
+  const snapPoints = ["50%"];
+
+  function handlePresentModal() {
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 100);
+  }
+
+
   return (
 
     <View className="h-full bg-primary" >
@@ -13,15 +51,21 @@ const Bookmark = () => {
           <Text className="font-psemibold text-3xl text-white">Vos biens</Text>
         </View>
 
-
+        <View>
+        <GoodCard
+        title="Appart bessieres 02"
+        textStyles="w-48"
+        containerStyles="mt-2"
+        rent='620'
+      /> 
+        
+        </View>
 
       </View>
     </ScrollView>
     </View>
   )
 }
-
-export default Bookmark
 
 const styles = StyleSheet.create({
   container: {

@@ -50,7 +50,7 @@ export default function Home() {
       <View className="w-full h-full">
       <View style={{ zIndex: 1 }}>
         <ButtonAdvice
-        title="Sauvegardez vos données en créant un compte!."
+        title="Sauvegardez vos données en créant un compte!"
         handlePress={handlePresentModal}
         textStyles="w-48 ml-3"
         containerStyles="mt-2"

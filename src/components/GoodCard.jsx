@@ -3,45 +3,28 @@ import React from 'react'
 import Svg, { G, Path } from "react-native-svg"
 import "../global.css"
 import { images } from "../constants"
+import { VirtualizedList } from 'react-native-web'
 
 
 const GoodCard = ({ title, handlePress, containerStyles, 
-    textStyles, isLoading}) => {
+    textStyles, isLoading, rent}) => {
   return (
     <TouchableOpacity 
-        onPress={handlePress}
-        activeOpacity={0.7}
-        className={`rounded-xl min-h-[62px] items-center justify-center
-          ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
-          disabled={isLoading}
-          style={styles.card}
-          >
-      <Image 
-        source={images.logo}
-        className="w-[80px] h-[80px] mr-5"
-        resizeMode='contain'
-        />
+    onPress={handlePress}
+    activeOpacity={0.7}
+    className={`rounded-xl min-h-[62px]
+      ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
+      disabled={isLoading}
+      style={styles.card}
+      >
+    <View className="items-center">
       <Text 
-        className={`${textStyles} font-pregular text-base mr-7`}>
+        className={`${textStyles} font-pmedium text-base w-28 text-center`}>
             {title}
       </Text>
-      <View className="bg-primary overflow-hidden h-2/5 rounded-full justify-center">
-        <Svg
-        width="30px"
-        height="30px"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        >
-        <Path
-          d="M5 12h14m0 0l-6-6m6 6l-6 6"
-          stroke="#fff"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          />
-        </Svg>
-      </View>
+      <View className = "w-3/4 mt-2 items-center bg-gray-400" style={{ height: 1 }}></View>
+    </View>
+    <Text className=" mt-2 font-pregular">Loyer: <Text className="text-green-600"> {rent}€</Text></Text>
     </TouchableOpacity>
   )
 }
@@ -50,8 +33,8 @@ export default GoodCard
 
 const styles = StyleSheet.create({
   card:{
-    height:100,
-    width:"92%",
+    height:230,
+    width:"40%",
     backgroundColor:"white",
     borderRadius:15,
     borderColor:'#000',
@@ -61,9 +44,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    position: 'absolute',
     marginLeft: '4%',
-    flexDirection: 'row'
+    flexDirection: 'col'
   },
   profileImg:{
     width:30,
