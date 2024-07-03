@@ -40,7 +40,7 @@ export default function Home() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-        <View className="flex-1 justify-center items-center">
+        <View className="flex-1 justify-center items-center" style={{ backgroundColor:"#f5f5f9"}}>
           <Button title="Bouton inscription" onPress={handlePresentModal} />
           <StatusBar style="auto" />
           <BottomSheetModal
@@ -66,7 +66,6 @@ export default function Home() {
                 }}
               />
               <Auth />
-              
             </View>
           </BottomSheetModal>
         </View>
