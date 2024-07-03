@@ -28,7 +28,7 @@ export default function Home() {
 
   const bottomSheetModalRef = useRef(null);
 
-  const snapPoints = ["75%"];
+  const snapPoints = ["50%"];
 
   function handlePresentModal() {
     bottomSheetModalRef.current?.present();
@@ -40,7 +40,6 @@ export default function Home() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
         <View className="flex-1 justify-center items-center">
           <Button title="Bouton inscription" onPress={handlePresentModal} />
           <StatusBar style="auto" />
@@ -55,7 +54,7 @@ export default function Home() {
               <Text className="font-psemibold text-2xl tracking-wide">
                 Création de compte
               </Text>
-               <Text className="w-full color-slate-500 text-center mt-5"> 
+               <Text className="w-full color-slate-500 text-center  mt-4"> 
                 Créez votre compte afin de sécuriser vos données.
               </Text>
               <View
@@ -71,7 +70,6 @@ export default function Home() {
             </View>
           </BottomSheetModal>
         </View>
-      </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 }

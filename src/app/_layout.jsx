@@ -2,7 +2,12 @@ import { Text, View, Image } from 'react-native'
 import { SplashScreen, Stack} from 'expo-router'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 import "../global.css"
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,10 +32,15 @@ const RootLayout = () => {
   if (!fontsLoaded && !error) return null;
 
   return (
-    <Stack>
-      <Stack.Screen name = "index" options={{ headerShown: false}} />
-      <Stack.Screen name = "(auth)" options={{ headerShown: false}} />
-    </Stack>
+    <GestureHandlerRootView>
+    <BottomSheetModalProvider>
+      <Stack>
+        <Stack.Screen name = "index" options={{ headerShown: false}} />
+        <Stack.Screen name = "(tabs)" options={{ headerShown: false}} />
+        <Stack.Screen name = "(auth)" options={{ headerShown: false}} />
+      </Stack>
+    </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   )
 }
 
