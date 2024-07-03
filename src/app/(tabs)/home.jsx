@@ -21,10 +21,10 @@ import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler
 import { Auth } from "../../components/Auth"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants"
-
+import CustomButton from '../../components/CustomButton';
+import ButtonAdvice from '../../components/ButtonAdvice';
 
 export default function Home() {
-  const [darkmode, setDarkmode] = useState(false);
   const [device, setDevice] = useState(false);
   const { width } = useWindowDimensions();
   const [theme, setTheme] = useState("dim");
@@ -45,21 +45,16 @@ export default function Home() {
   return (
     <View className="h-full bg-primary" >
     <ScrollView contentContainerStyle={{ height: '100%'}}>
-      <View className="bg-white h-full">
+      <View className="bg-secondary h-full">
 
-      <View className="w-full h-32">
-        <View className="w-full h-16 bg-primary"></View>
-        <View className="w-full h-16 bg-gray-50"></View>
-        <View className="bg-white rounded-2xl border-2 b bg-slate-400order-primary  w-11/12 absolute top-1/4 ml-1" style={{ marginLeft: '4.00%' }}>
-        <Image
-        source={images.logo}
-        className="w-[100px] h-[100px]"
-        resizeMode='contain'
-        />
-      <View className="w-full justify-center items-center min-h-[65vh] absolute">
-    <GestureHandlerRootView className="flex-1">
-        <View>
-          <Button title="Pensez à sécurisez vos données en créant un compte !" onPress={handlePresentModal} color="#000000" />
+      <View className="w-full h-full">
+      <View style={{ zIndex: 1 }}>
+        <ButtonAdvice
+        title="Sauvegardez vos données en créant un compte!."
+        handlePress={handlePresentModal}
+        textStyles="w-48 ml-3"
+        containerStyles="mt-2"
+      /> 
           <StatusBar style="auto" />
           <BottomSheetModal
             ref={bottomSheetModalRef}
@@ -72,7 +67,7 @@ export default function Home() {
               <Text className="font-psemibold text-2xl tracking-wide">
                 Création de compte
               </Text>
-               <Text className="w-full color-slate-500 text-center  mt-4"> 
+               <Text className="w-full color-slate-500 text-center mt-4"> 
                 Créez votre compte afin de sécuriser vos données.
               </Text>
               <View
@@ -87,11 +82,12 @@ export default function Home() {
             </View>
           </BottomSheetModal>
         </View>
+        <View className="w-full h-16 bg-primary"></View>
+        <View className="w-full h-16 bg-secondary"></View>
+      <View>
+    <GestureHandlerRootView className="flex-1">
     </GestureHandlerRootView>
-    <View className="bg-slate-200">
-      <Text>Test</Text>
-    </View>
-  </View>
+
       </View>
         </View>
                 </View>
@@ -100,3 +96,25 @@ export default function Home() {
   );
 }
 
+const styles = StyleSheet.create({
+  card:{
+    height:130,
+    width:"80%",
+    backgroundColor:"white",
+    borderRadius:15,
+    padding:10,
+    elevation:10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    position: 'absolute',
+    marginLeft: '9%'
+  },
+  profileImg:{
+    width:30,
+    height:30,
+    borderRadius:50,
+    marginRight:10,
+  },
+});

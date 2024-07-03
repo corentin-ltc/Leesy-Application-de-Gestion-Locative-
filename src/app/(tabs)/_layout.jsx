@@ -3,6 +3,7 @@ import { Tabs, Redirect } from 'expo-router'
 import { icons } from '../../constants'
 import "../../global.css"
 
+
 const TabIcon = ({ icon, color, name, focused}) => {
     return (
         <View className="items-center justify-center gap-2 ">

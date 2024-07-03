@@ -1,6 +1,7 @@
-import { TouchableOpacity, Text } from 'react-native'
+import { TouchableOpacity, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import "../global.css"
+import { images } from "../constants"
 
 const CustomButton = ({ title, handlePress, containerStyles, 
     textStyles, isLoading }) => {

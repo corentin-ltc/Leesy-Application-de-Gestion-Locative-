@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { G, Path } from "react-native-svg"
 
+
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
@@ -51,7 +52,7 @@ const RootLayout = () => {
             </View>
           ),
            headerStyle: {
-            backgroundColor:'#32533d',
+            backgroundColor:'#14bdeb',
             borderBottomWidth: 0,
            },
            headerTitle: () =>(
