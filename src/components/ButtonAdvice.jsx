@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
-    shadowRadius: 5,
+    shadowRadius: 1,
     position: 'absolute',
     marginLeft: '4%',
     flexDirection: 'row'

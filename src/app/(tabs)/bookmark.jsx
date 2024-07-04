@@ -1,4 +1,5 @@
 import GoodCard from '../../components/GoodCard';
+import AddCard from '../../components/AddCard';
 import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import {
@@ -34,6 +35,13 @@ export default function Bookmark() {
 
   const snapPoints = ["50%"];
 
+  const goodCardsData = [
+    { title: "Appart bessieres 02", rent: '620' },
+    { title: "Ok lourd", rent: '620' },
+    { title: "Appart bessieres 02", rent: '620' },
+    { title: "Appart bessieres 02", rent: '620' }
+  ];
+
   function handlePresentModal() {
     bottomSheetModalRef.current?.present();
     setTimeout(() => {
@@ -45,21 +53,23 @@ export default function Bookmark() {
   return (
 
     <View className="h-full bg-primary" >
-    <ScrollView contentContainerStyle={{ height: '100%'}}>
+    <ScrollView>
       <View className="bg-secondary h-full w-full">
         <View className="w-full h-16 bg-primary items-center justify-center">
           <Text className="font-psemibold text-3xl text-white">Vos biens</Text>
         </View>
 
-        <View>
-        <GoodCard
-        title="Appart bessieres 02"
-        textStyles="w-48"
-        containerStyles="mt-2"
-        rent='620'
-      /> 
-        
+        <View id="goodcards-container" className="flex-row flex-wrap">
+        {goodCardsData.map((card, index) => (
+           <GoodCard
+            key={index}
+            title={card.title}
+            rent={card.rent}
+           />
+        ))}
         </View>
+        <AddCard/>
+        <View className="bg-secondary h-24 mt-52"></View>
 
       </View>
     </ScrollView>

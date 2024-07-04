@@ -1,35 +1,30 @@
 import {TouchableOpacity, Text, StyleSheet, Image, View} from 'react-native'
 import React from 'react'
-import Svg, { G, Path } from "react-native-svg"
+import Svg, { Circle, Path } from "react-native-svg"
 import "../global.css"
 import { images } from "../constants"
 import { VirtualizedList } from 'react-native-web'
 
 
-const GoodCard = ({ title, handlePress, containerStyles, 
+const AddCard = ({ title, handlePress, containerStyles, 
     textStyles, isLoading, rent}) => {
   return (
     <TouchableOpacity 
     onPress={handlePress}
     activeOpacity={0.7}
-    className={`rounded-xl min-h-[62px] mt-4
+    className={`rounded-xl min-h-[62px] mt-6
       ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
       disabled={isLoading}
       style={styles.card}
       >
-    <View className="items-center">
-      <Text 
-        className={`${textStyles} font-pmedium text-base w-48 text-center`}>
-            {title}
-      </Text>
-      <View className = "w-3/4 mt-2 items-center bg-gray-400" style={{ height: 1 }}></View>
+    <View className="mt-6 items-center justify-center h-full">
+    <Text className="text-9xl font-pthin justify-center">+</Text>
     </View>
-    <Text className=" mt-2 font-pregular">Loyer: <Text className="text-green-600"> {rent}€</Text></Text>
     </TouchableOpacity>
   )
 }
 
-export default GoodCard
+export default AddCard
 
 const styles = StyleSheet.create({
   card:{
@@ -37,7 +32,7 @@ const styles = StyleSheet.create({
     width:"40%",
     backgroundColor:"white",
     borderRadius:15,
-    borderColor:'#000',
+    borderColor:'blue',
     padding:10,
     elevation:10,
     shadowColor: '#000',
