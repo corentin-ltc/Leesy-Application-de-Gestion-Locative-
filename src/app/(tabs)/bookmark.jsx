@@ -1,4 +1,4 @@
-import GoodCard from '../../components/GoodCard';
+import PropertyCard from '../../components/PropertyCard';
 import AddCard from '../../components/AddCard';
 import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
@@ -35,7 +35,7 @@ export default function Bookmark() {
 
   const snapPoints = ["50%"];
 
-  const goodCardsData = [
+  const PropertyCardsData = [
     { title: "Appart bessieres 02", rent: '620' },
     { title: "Ok lourd", rent: '620' },
     { title: "Appart bessieres 02", rent: '620' },
@@ -59,9 +59,9 @@ export default function Bookmark() {
           <Text className="font-psemibold text-3xl text-white">Vos biens</Text>
         </View>
 
-        <View id="goodcards-container" className="flex-row flex-wrap">
-        {goodCardsData.map((card, index) => (
-           <GoodCard
+        <View id="PropertyCards-container" className="flex-row flex-wrap">
+        {PropertyCardsData.map((card, index) => (
+           <PropertyCard
             key={index}
             title={card.title}
             rent={card.rent}

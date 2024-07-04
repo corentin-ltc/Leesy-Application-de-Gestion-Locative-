@@ -38,13 +38,13 @@ const TabsLayout = () => {
         <Tabs.Screen
             name="home"
             options={{
-                title: 'Home',
+                title: '',
                 headerShown: false,
                 tabBarIcon: ({ color, focused}) => (
                 <TabIcon
                     icon={icons.home}
                     color={color}
-                    name="Home"
+                    name="Accueil"
                     focused={focused}
                 />
                 )
@@ -54,13 +54,13 @@ const TabsLayout = () => {
         <Tabs.Screen
             name="bookmark"
             options={{
-                title: 'Bookmark',
+                title: 'Biens',
                 headerShown: false,
                 tabBarIcon: ({ color, focused}) => (
                 <TabIcon
                     icon={icons.bookmark}
                     color={color}
-                    name="Bookmark"
+                    name="Biens"
                     focused={focused}
                 />
                 )
@@ -68,15 +68,15 @@ const TabsLayout = () => {
             />
 
         <Tabs.Screen
-            name="create"
+            name="premium"
             options={{
-                title: 'Create',
+                title: 'Premium',
                 headerShown: false,
                 tabBarIcon: ({ color, focused}) => (
                 <TabIcon
                     icon={icons.plus}
                     color={color}
-                    name="Create"
+                    name="Premium"
                     focused={focused}
                 />
                 )

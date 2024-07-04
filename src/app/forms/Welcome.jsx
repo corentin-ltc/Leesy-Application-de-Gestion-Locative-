@@ -2,11 +2,11 @@ import { StatusBar } from 'expo-status-bar';
 import { ScrollView, Text, View, Image } from 'react-native';
 import { Link, Redirect, router} from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { images } from "../constants"
-import "../global.css"
-import CustomButton from '../components/CustomButton';
+import { images } from "../../constants"
+import "../../global.css"
+import CustomButton from '../../components/CustomButton';
 
-export default function App() {
+export default function Welcome() {
   return (
     <SafeAreaView style = {{ backgroundColor: '#2c2e2e' }}>
      <ScrollView contentContainerStyle={{ height: '100%'}}>
@@ -25,12 +25,12 @@ export default function App() {
 
       <CustomButton
         title="Ajouter un bien"
-        handlePress={() => router.push('/home')}
+        handlePress={() => router.push('./../home')}
         containerStyles="w-10/12 mt-64"
       />
       <CustomButton
         title="Se connecter"
-        handlePress={() => router.push('/sign-in')}
+        handlePress={() => router.push('./../sign-in')}
         containerStyles="w-10/12 mt-7"
       />
       </View>

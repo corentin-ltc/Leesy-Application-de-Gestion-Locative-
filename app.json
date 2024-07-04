@@ -14,12 +14,13 @@
           "origin": "https://n"
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-asset"
     ],
     "name": "letzgoo",
     "slug": "letzgoo"
   },
   "ios": {
-      "usesAppleSignIn": true
-    }
+    "usesAppleSignIn": true
+  }
 }

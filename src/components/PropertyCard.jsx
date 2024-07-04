@@ -6,7 +6,7 @@ import { images } from "../constants"
 import { VirtualizedList } from 'react-native-web'
 
 
-const GoodCard = ({ title, handlePress, containerStyles, 
+const PropertyCard = ({ title, handlePress, containerStyles, 
     textStyles, isLoading, rent}) => {
   return (
     <TouchableOpacity 
@@ -29,7 +29,7 @@ const GoodCard = ({ title, handlePress, containerStyles,
   )
 }
 
-export default GoodCard
+export default PropertyCard
 
 const styles = StyleSheet.create({
   card:{
