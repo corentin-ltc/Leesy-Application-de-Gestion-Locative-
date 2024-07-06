@@ -1,10 +1,10 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Alert } from 'react-native';
 import { Rental } from '../app/types';
 
 interface PropertyCardProps {
-  rental: Rental[];
-  deleteTransaction: (id: number) => Promise<void>;
+  rental: Rental;
+  deleteRental: (id: number) => Promise<void>;
   handlePress: () => void;
   containerStyles?: any;
   textStyles?: any;
@@ -13,41 +13,55 @@ interface PropertyCardProps {
 
 const PropertyCard: React.FC<PropertyCardProps> = ({
   rental,
-  deleteTransaction,
+  deleteRental,
   handlePress,
   containerStyles,
   textStyles,
   isLoading,
 }) => {
-  
+
+  const handleLongPress = () => {
+    Alert.alert(
+      'Delete Rental',
+      'Are you sure you want to delete this rental?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => deleteRental(rental.id),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   return (
-    <View className='flex-row flex-wrap'>
-      {rental.map((transaction) => (
-        <TouchableOpacity
-          key={transaction.id}
-          onPress={() => handlePress()} // Exemple de gestionnaire de pression avec passage d'ID
-          activeOpacity={0.7}
-          className={`rounded-xl min-h-[62px] mt-6
-            ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
-          style={styles.card}
-          
-          disabled={isLoading}
-        >
-          <View className="items-center">
-            <Text className={`${textStyles} font-pmedium text-base w-48 text-center`}>
-              {transaction.rental_name}
-            </Text>
-            <View className = "w-3/4 mt-2 items-center bg-gray-400" style={{ height: 1 }}></View>
-            <Text className="font-pregular">
-              Loyer: <Text className='text-green'>442€</Text>
-            </Text >
-            <Text className="font-pregular">
-            {transaction.rental_city}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      ))}
-    </View>
+    <TouchableOpacity
+      key={rental.id}
+      onPress={() => handlePress()} // Example handler with ID pass
+      onLongPress={handleLongPress}
+      activeOpacity={0.5}
+      className={`rounded-xl min-h-[62px] mt-6
+        ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
+      style={styles.card}
+      disabled={isLoading}
+    >
+      <View className="items-center">
+        <Text className={`${textStyles} font-pmedium text-base w-48 text-center`}>
+          {rental.rental_name}
+        </Text>
+        <View className="w-3/4 mt-2 items-center bg-gray-400" style={{ height: 1 }}></View>
+      </View>
+      <Text className="font-pregular">
+        Loyer: <Text className="text-green-600">442€</Text>
+      </Text>
+      <Text className="font-pregular">
+        {rental.rental_city}
+      </Text>
+    </TouchableOpacity>
   );
 };
 

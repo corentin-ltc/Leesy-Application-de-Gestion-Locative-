@@ -85,6 +85,7 @@ const RootLayout = () => {
         <BottomSheetModalProvider>
           <Stack className="bg-secondary" screenOptions={{ headerShadowVisible: false }}>
             <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="forms/AddRental" options={{ headerShown: false }} />
             <Stack.Screen name = "(tabs)" options={{
            headerLeft: () => (
             <View className="ml-4 mb-3 border-0 items-center justify-center">
