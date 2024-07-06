@@ -1,14 +1,12 @@
-export interface Transaction {
-    id: number;
-    category_id: number;
-    amount: number,
-    date: number,
-    description: string;
-    type: "Expense" | "Income";
-}
 
-export interface Category {
+export interface Rental {
     id: number;
-    name: string;
-    type: "Expense" | "Income";
+    rental_name: string;
+    rental_city: string;
+    rental_postal_code: string,
+    number_of_tenants: number;
+    country: string,
+    surface_area: number,
+    rental_type: number,
+    user_id: number;
 }

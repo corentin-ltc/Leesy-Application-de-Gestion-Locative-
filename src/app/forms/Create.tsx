@@ -1,15 +1,15 @@
 import { View, Text, ScrollView } from 'react-native'
 import * as React from 'react'
-import { Category, Transaction } from '../types';
+import { Rental } from '../types';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { Link, Redirect, router} from 'expo-router';
 import CustomButton from '../../components/CustomButton';
-import TransactionList from '@/components/TransactionList';
+import PropertyCard from '../../components/PropertyCard';
+import TransactionList from '@/components/PropertyCard';
 
 
   export default function Create() {
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
+  const [rental, setRental] = React.useState<Rental[]>([]);
   
   const db = useSQLiteContext();
 
@@ -20,15 +20,15 @@ import TransactionList from '@/components/TransactionList';
   }, [db])
 
   async function getData() {
-    const result = await db.getAllAsync<Transaction>(
-      `SELECT * FROM Transactions ORDER BY date DESC;`
+    const result = await db.getAllAsync<Rental>(
+      `SELECT * FROM Rental;`
     );
-    setTransactions(result);
+    setRental(result);
   }
 
   async function deleteTransaction(id: number) {
     db.withTransactionAsync(async () => {
-      await db.runAsync(`DELETE FROM Transactions WHERE id = ?;`, [id]);
+      await db.runAsync(`DELETE FROM Rental WHERE id = ?;`, [id]);
       await getData();
     });
   }
@@ -44,10 +44,9 @@ import TransactionList from '@/components/TransactionList';
         handlePress={() => router.push('../home')}
         containerStyles="w-10/12 mt-7"
       />
-      <TransactionList 
-      categories={categories}
-      transactions={transactions}
-      deleteTransaction={deleteTransaction}
+      <PropertyCard
+      rental={rental}
+      
       />
       </View>
     </ScrollView>

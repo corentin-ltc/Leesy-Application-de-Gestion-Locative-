@@ -17,8 +17,8 @@
       "expo-apple-authentication",
       "expo-asset"
     ],
-    "name": "letzgoo",
-    "slug": "letzgoo"
+    "name": "Leesy",
+    "slug": "leesy"
   },
   "ios": {
     "usesAppleSignIn": true
