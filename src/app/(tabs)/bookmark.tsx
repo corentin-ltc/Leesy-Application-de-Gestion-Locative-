@@ -6,6 +6,8 @@ import { useSQLiteContext } from 'expo-sqlite/next';
 import * as React from 'react'
 
 
+
+
 export default function Bookmark() {
   const [rental, setRental] = React.useState<Rental[]>([]);
   
@@ -42,6 +44,9 @@ export default function Bookmark() {
         <View id="PropertyCards-container" className="flex-row flex-wrap">
         
         </View>
+        <PropertyCard 
+      rental={rental}
+      />
         <AddCard/>
         <View className="bg-secondary h-24 mt-52"></View>
 

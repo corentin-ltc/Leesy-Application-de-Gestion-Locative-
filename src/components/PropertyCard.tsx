@@ -19,29 +19,29 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   textStyles,
   isLoading,
 }) => {
+  
   return (
-    <View style={{ padding: 15 }}>
+    <View className='flex-row flex-wrap'>
       {rental.map((transaction) => (
         <TouchableOpacity
           key={transaction.id}
           onPress={() => handlePress()} // Exemple de gestionnaire de pression avec passage d'ID
           activeOpacity={0.7}
-          style={[
-            styles.card,
-            containerStyles,
-            isLoading ? { opacity: 0.8 } : null,
-          ]}
+          className={`rounded-xl min-h-[62px] mt-6
+            ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
+          style={styles.card}
+          
           disabled={isLoading}
         >
-          <View style={styles.cardContent}>
-            <Text style={[styles.title, textStyles]}>
+          <View className="items-center">
+            <Text className={`${textStyles} font-pmedium text-base w-48 text-center`}>
               {transaction.rental_name}
             </Text>
-            <View style={styles.divider} />
-            <Text style={styles.rentText}>
-              Loyer: <Text style={styles.rentValue}>442€</Text>
+            <View className = "w-3/4 mt-2 items-center bg-gray-400" style={{ height: 1 }}></View>
+            <Text className="font-pregular">
+              Loyer: <Text className='text-green'>442€</Text>
             </Text >
-            <Text style={styles.rentText}>
+            <Text className="font-pregular">
             {transaction.rental_city}
             </Text>
           </View>
@@ -53,8 +53,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    height: 240,
-    width: '45%',
+    height: 230,
+    width: '40%',
     backgroundColor: 'white',
     borderRadius: 15,
     borderColor: '#000',
@@ -64,30 +64,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    marginBottom: 15,
-  },
-  cardContent: {
-    alignItems: 'center',
-  },
-  title: {
-    fontFamily: 'font-pmedium',
-    fontSize: 16,
-    width: 160,
-    textAlign: 'center',
-  },
-  divider: {
-    width: '75%',
-    height: 1,
-    backgroundColor: '#ccc',
-    marginVertical: 10,
-  },
-  rentText: {
-    marginTop: 10,
-    fontFamily: 'font-pregular',
-    fontSize: 14,
-  },
-  rentValue: {
-    color: 'green',
+    marginBottom: '6.5%',
+    marginLeft: '6.5%',
   },
 });
 

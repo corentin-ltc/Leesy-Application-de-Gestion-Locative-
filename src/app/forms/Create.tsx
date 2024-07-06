@@ -5,7 +5,6 @@ import { useSQLiteContext } from 'expo-sqlite/next';
 import { Link, Redirect, router} from 'expo-router';
 import CustomButton from '../../components/CustomButton';
 import PropertyCard from '../../components/PropertyCard';
-import TransactionList from '@/components/PropertyCard';
 
 
   export default function Create() {
@@ -44,7 +43,7 @@ import TransactionList from '@/components/PropertyCard';
         handlePress={() => router.push('../home')}
         containerStyles="w-10/12 mt-7"
       />
-      <PropertyCard
+      <PropertyCard 
       rental={rental}
       
       />
