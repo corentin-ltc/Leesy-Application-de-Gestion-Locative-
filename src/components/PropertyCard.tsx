@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet, Alert } from 'react-native';
 import { Rental } from '../app/types';
+import { Link } from 'expo-router';
 
 interface PropertyCardProps {
   rental: Rental;
@@ -41,14 +42,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <TouchableOpacity
       key={rental.id}
-      onPress={() => handlePress()} // Example handler with ID pass
+      onPress={() => handlePress()}
       onLongPress={handleLongPress}
       activeOpacity={0.5}
       className={`rounded-xl min-h-[62px] mt-6
         ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
       style={styles.card}
       disabled={isLoading}
-    >
+      >
       <View className="items-center">
         <Text className={`${textStyles} font-pmedium text-base w-48 text-center`}>
           {rental.rental_name}

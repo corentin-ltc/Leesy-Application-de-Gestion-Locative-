@@ -64,6 +64,7 @@ export default function Bookmark() {
                 key={rental.id}
                 rental={rental}
                 deleteRental={deleteRental}
+                handlePress={() => router.push(`./../rental_details/${rental.id}`)}
               />
             ))}
             <AddCard handlePress={() => router.push('./../forms/AddRental')} />
