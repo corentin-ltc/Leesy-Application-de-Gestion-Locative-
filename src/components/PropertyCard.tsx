@@ -40,6 +40,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   };
 
   return (
+    
     <TouchableOpacity
       key={rental.id}
       onPress={() => handlePress()}

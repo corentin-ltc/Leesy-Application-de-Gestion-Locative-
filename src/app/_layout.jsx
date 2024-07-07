@@ -1,5 +1,5 @@
-import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
-import { SplashScreen, Stack } from 'expo-router';
+import { Text, View, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { SplashScreen, Stack, router } from 'expo-router';
 import { useFonts } from 'expo-font';
 import React, { useState, useEffect } from 'react';
 import {
@@ -11,6 +11,7 @@ import Svg, { Path } from 'react-native-svg';
 import { SQLiteProvider } from 'expo-sqlite/next';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
+import { Ionicons } from '@expo/vector-icons';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -86,6 +87,17 @@ const RootLayout = () => {
           <Stack className="bg-secondary" screenOptions={{ headerShadowVisible: false }}>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="forms/AddRental" options={{ headerShown: false }} />
+            <Stack.Screen name="rental_details/[id]" options = {{
+              title:'',
+              headerLeft: () => (
+                <TouchableOpacity onPress={router.back}>
+                  <Ionicons name="arrow-back" size={34} color="black" />
+                </TouchableOpacity>
+              ),
+              headerLargeTitle: true,
+              headerTransparent: true,
+
+            }}/>
             <Stack.Screen name = "(tabs)" options={{
            headerLeft: () => (
             <View className="ml-4 mb-3 border-0 items-center justify-center">
