@@ -1,15 +1,50 @@
-import { ScrollView, SectionList, StyleSheet, Text, View , TouchableOpacity} from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { useSQLiteContext } from 'expo-sqlite/next'; // Ensure this import is correct based on your project setup.
+import { useSQLiteContext } from 'expo-sqlite/next';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { Dimensions } from 'react-native';
 
-const categories = ['Détails', 'Locataires', 'Dépenses', 'Revenus'];
+const initialLayout = { width: Dimensions.get('window').width };
+
+const DétailsRoute = ({ rental }) => (
+    <View style={styles.sectionContent}>
+        <Text>Nom de la location: {rental.rental_name}</Text>
+        <Text>Adresse: {rental.address}</Text>
+        <Text>Prix: {rental.price}</Text>
+        <Text>Description: {rental.description}</Text>
+    </View>
+);
+
+const LocatairesRoute = () => (
+    <View style={styles.sectionContent}>
+        <Text>Liste des locataires</Text>
+    </View>
+);
+
+const DépensesRoute = () => (
+    <View style={styles.sectionContent}>
+        <Text>Liste des dépenses</Text>
+    </View>
+);
+
+const RevenusRoute = () => (
+    <View style={styles.sectionContent}>
+        <Text>Liste des revenus</Text>
+    </View>
+);
 
 const RentalDetails = () => {
     const { id } = useLocalSearchParams();
     const headerHeight = useHeaderHeight();
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
+        { key: 'details', title: 'Détails' },
+        { key: 'locataires', title: 'Locataires' },
+        { key: 'dépenses', title: 'Dépenses' },
+        { key: 'revenus', title: 'Revenus' },
+    ]);
     const [rental, setRental] = useState(null);
     const db = useSQLiteContext();
 
@@ -24,6 +59,22 @@ const RentalDetails = () => {
         }
     };
 
+    const renderScene = SceneMap({
+        details: () => <DétailsRoute rental={rental} />,
+        locataires: LocatairesRoute,
+        dépenses: DépensesRoute,
+        revenus: RevenusRoute,
+    });
+
+    const renderTabBar = props => (
+        <TabBar
+            {...props}
+            indicatorStyle={styles.indicator}
+            style={styles.tabBar}
+            labelStyle={styles.tabBarLabel}
+        />
+    );
+
     if (!rental) {
         return <Text>Loading...</Text>;
     }
@@ -31,48 +82,18 @@ const RentalDetails = () => {
     return (
         <>
             <Stack.Screen options={{ title: rental.rental_name }} />
-            <SectionList
-                style={{ paddingTop: headerHeight }}
-                contentInsetAdjustmentBehavior='automatic'
-                keyExtractor={(item) => item.title}
-                sections={[{ data: [{ title: 'Chart' }] }]}
-                renderSectionHeader={() => (
-                    <ScrollView
-                      horizontal={true}
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={{
-                        alignItems: 'center',
-                        width: '100%',
-                        justifyContent: 'space-between',
-                        paddingHorizontal: 16,
-                        paddingBottom: 8,
-                        backgroundColor: '',
-                        borderBottomWidth: StyleSheet.hairlineWidth,
-                      }}>
-                        {categories.map((item, index) => (
-                         <TouchableOpacity
-                           key={index}
-                           onPress={() => setActiveIndex(index)}
-                           style={activeIndex === index ? styles.categoriesBtnActive : styles.categoriesBtn}>
-                           <Text
-                             style={activeIndex === index ? styles.categoryTextActive : styles.categoryText}>
-                             {item}
-                           </Text>
-                         </TouchableOpacity>
-                    ))}
-                    </ScrollView>
-                  )}
-                
-                renderItem={({ item }) => (
-                    <View>
-                        {/* CHART */}
-                        <Text>{item.title}</Text>
-                    </View>
-                )}
-            />
+            <View style={[styles.container, { paddingTop: headerHeight }]}>
+                <TabView
+                    navigationState={{ index, routes }}
+                    renderScene={renderScene}
+                    onIndexChange={setIndex}
+                    initialLayout={initialLayout}
+                    renderTabBar={renderTabBar}
+                />
+            </View>
         </>
     );
-}
+};
 
 export default RentalDetails;
 
@@ -81,16 +102,24 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
     },
-    sectionHeader: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        backgroundColor: '#fff',
-        padding: 10,
+    tabBar: {
+        backgroundColor: '#14bdeb', // Top bar background color
     },
-    item: {
+    indicator: {
+        backgroundColor: '#fff', // Indicator color
+    },
+    tabBarLabel: {
+        color: '#fff', // Label color
+        fontWeight: 'bold',
+    },
+    sectionContent: {
         backgroundColor: '#fff',
-        padding: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        padding: 15,
+        borderRadius: 5,
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
     },
 });

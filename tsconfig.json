@@ -12,5 +12,5 @@
     "global.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ]
+, "src/app/index.jsx", "src/app/index.jsx", "src/app/index.jsx"  ]
 }

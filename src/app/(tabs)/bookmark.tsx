@@ -51,7 +51,7 @@ export default function Bookmark() {
 
   return (
     <View className="h-full bg-primary">
-      <ScrollView>
+      <ScrollView >
         <View className="bg-secondary h-full w-full">
           <View className="w-full h-16 bg-primary items-center justify-center">
             <Text className="font-psemibold text-3xl text-white">Vos biens</Text>
