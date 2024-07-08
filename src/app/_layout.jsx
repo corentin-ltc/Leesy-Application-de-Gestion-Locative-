@@ -93,9 +93,6 @@ const RootLayout = () => {
               title:'',
               headerRight:() => (
                 <View className="flex-row items-center">
-                  <Text className="font-psemibold text-gray mr-2">
-                    Corentin
-                    </Text>
                     <View className="mb-1">
     
                   <Svg
@@ -126,7 +123,7 @@ const RootLayout = () => {
               headerTransparent: true,
               headerTintColor: 'white',
               headerStyle: {
-                backgroundColor:'#14bdeb',
+                backgroundColor:'#736ced',
                 borderBottomWidth: 0,
                },
             }}/>
