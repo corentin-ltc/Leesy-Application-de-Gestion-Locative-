@@ -63,7 +63,8 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     position: 'absolute',
     marginLeft: '4%',
-    flexDirection: 'row'
+    flexDirection: 'row',
+
   },
   profileImg:{
     width:30,

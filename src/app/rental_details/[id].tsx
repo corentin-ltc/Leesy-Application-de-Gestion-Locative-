@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, FlatList, Dimensions, ScrollView, VirtualizedList } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import SummaryChart from '@/components/SummaryChart';
 
 const initialLayout = { width: Dimensions.get('window').width };
 
@@ -12,12 +13,19 @@ const capitalizeFirstLetter = (string) => {
 };
 
 const DétailsRoute = ({ rental }) => (
-  <View style={styles.sectionContent}>
-    <Text>Nom de la location: {rental.rental_name}</Text>
-    <Text>Adresse: {rental.address}</Text>
-    <Text>Prix: {rental.price}</Text>
-    <Text>Description: {rental.description}</Text>
-  </View>
+  <ScrollView>
+    <View className='justify-center items-center'>
+
+      <SummaryChart/>
+
+       <View className="mt-5" style={styles.card}>
+        <Text>Nom de la location: {rental.rental_name}</Text>
+        <Text>Adresse: {rental.address}</Text>
+        <Text>Prix: {rental.price}</Text>
+        <Text>Description: {rental.description}</Text>       
+      </View>
+    </View>
+  </ScrollView>
 );
 
 const LocatairesRoute = () => (
@@ -255,5 +263,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
+  },
+  card: {
+    padding: 15,
+    borderRadius: 15,
+    backgroundColor: "white",
+    width:'92%',
+    elevation: 8,
+    shadowColor: "#000",
+    shadowRadius: 8,
+    shadowOffset: { height: 6, width: 0 },
+    shadowOpacity: 0.15,
   },
 });
