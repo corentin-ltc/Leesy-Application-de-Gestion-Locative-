@@ -23,15 +23,15 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
   const handleLongPress = () => {
     Alert.alert(
-      'Delete Rental',
-      'Are you sure you want to delete this rental?',
+      'Supprimer le bien',
+      `Etes-vous certain de vouloir supprimer ${rental.rental_name} ?`,
       [
         {
-          text: 'Cancel',
+          text: 'Annuler',
           style: 'cancel',
         },
         {
-          text: 'OK',
+          text: 'Supprimer',
           onPress: () => deleteRental(rental.id),
         },
       ],
