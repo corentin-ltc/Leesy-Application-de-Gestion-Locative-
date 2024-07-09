@@ -1,76 +1,113 @@
-import { View, Text, StyleSheet } from 'react-native'
-import * as React from 'react'
-import { BarChart, barDataItem } from "react-native-gifted-charts"
-import { useSQLiteContext } from 'expo-sqlite'
+import { View, Text, StyleSheet, processColor } from 'react-native';
+import * as React from 'react';
+import { BarChart } from "react-native-gifted-charts";
+import { useSQLiteContext } from 'expo-sqlite';
+import { processWeeklyData } from '@/utils/dataProcessHelpers';
 
 enum Period {
-    week = "week",
-    month = "month",
-    year = "year"
+  week = "week",
+  month = "month",
+  year = "year"
 }
-export default function SummaryChart () {
 
+export default function SummaryChart() {
   const db = useSQLiteContext();
-  const [chartData, setChartData] = React.useState<barDataItem>();
+  const [chartData, setChartData] = React.useState([]);
   const [chartPeriod, setChartPeriod] = React.useState<Period>(Period.month);
   const [currentDate, setCurrentDate] = React.useState<Date>(new Date());
+  const [currentEndDate, setCurrentEndDate] = React.useState<Date>(new Date());
+  const [transactionType, setTransactionType] = React.useState<"Income" | "Expense">("Income");
 
   React.useEffect(() => {
-    const fetchData = async () =>{
+    const fetchData = async () => {
+      try {
         if (chartPeriod === Period.month) {
-            // start date and end date
+          const { endDate, startDate } = getWeekRange(currentDate);
+          setCurrentEndDate(new Date(endDate));
+
+          const data = await fetchWeeklyData(startDate, endDate, transactionType);
+          setChartData(processWeeklyData(data!, transactionType))
         }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [chartPeriod, currentDate, transactionType]);
+
+  const fetchWeeklyData = async (startDate: number, endDate: number, type: "Income" | "Expense") => {
+    try {
+      const query = `
+        SELECT
+          strftime('%w', date, 'unixepoch') AS day_of_week,
+          SUM(amount) as total
+        FROM Transactions
+        WHERE date >= ? AND date <= ? AND type = ?
+        GROUP BY day_of_week
+        ORDER BY day_of_week ASC
+      `;
+
+      const result = await db.getAllAsync(query, [startDate, endDate, type]);
+
+      return result;
+    } catch (e) {
+      console.error("Database query error:", e);
+      return [];
     }
-  }, [])
+  };
 
   const getWeekRange = (date: Date) => {
-    const startOfWeek = new Date(date.setDate(date.getDate() - date.getDay()));
-    const endOfWeek = new Date(date.setDate(startOfWeek.getDate() + 6));
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() - date.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
 
     return {
-        startDate: startOfWeek
-    }
-  }
-  return (
-    <View className='w-full mt-3' style={ styles.card }>
-    <Text className='font-pmedium text-black text-2xl'>Ce mois-ci: <Text className='text-green-600'>+750€</Text></Text>
-    <View className='items-center justify-center mt-2'>
+      startDate: Math.floor(startOfWeek.getTime() / 1000), // Unix timestamp in seconds
+      endDate: Math.floor(endOfWeek.getTime() / 1000) // Unix timestamp in seconds
+    };
+  };
 
-    </View>
+  return (
+    <View className='w-full mt-3' style={styles.card}>
+      <Text className='font-pmedium text-black text-2xl'>
+        Ce mois-ci: <Text className='text-green-600'>+750€</Text>
+      </Text>
+      <View className='items-center justify-center mt-2'>
         <BarChart
-            data={[
-                {value: 100}, 
-                {value: 200, frontColor: 'blue'}, 
-                {value: 200, frontColor: 'green'}
-            ]}
-            height={200}
-            width={280}
-            barWidth={18}
-            barBorderRadius={3}
-            spacing={20}
-            noOfSections={4}
-            yAxisThickness={0}
-            xAxisThickness={0}
-            xAxisLabelTextStyle={{ color: "gray" }}
-            yAxisTextStyle={{ color: "gray" }}
-            isAnimated
-            animationDuration={400}
-            />
+          data={chartData}
+          height={200}
+          width={280}
+          barWidth={18}
+          barBorderRadius={3}
+          spacing={20}
+          noOfSections={4}
+          yAxisThickness={0}
+          xAxisThickness={0}
+          xAxisLabelTextStyle={{ color: "gray" }}
+          yAxisTextStyle={{ color: "gray" }}
+          isAnimated
+          animationDuration={400}
+          showGradient
+        />
+      </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-    card: {
-      padding: 15,
-      borderRadius: 15,
-      backgroundColor: "white",
-      width:'92%',
-      elevation: 8,
-      shadowColor: "#000",
-      shadowRadius: 8,
-      shadowOffset: { height: 6, width: 0 },
-      shadowOpacity: 0.15,
-    },
-  });
-
+  card: {
+    padding: 15,
+    borderRadius: 15,
+    backgroundColor: "white",
+    width: '92%',
+    elevation: 8,
+    shadowColor: "#000",
+    shadowRadius: 8,
+    shadowOffset: { height: 6, width: 0 },
+    shadowOpacity: 0.15,
+  },
+});

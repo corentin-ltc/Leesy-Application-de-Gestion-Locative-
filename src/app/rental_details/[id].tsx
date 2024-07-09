@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList, Dimensions, ScrollView, VirtualizedList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, Button, FlatList, Dimensions, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import SummaryChart from '@/components/SummaryChart';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const initialLayout = { width: Dimensions.get('window').width };
 
@@ -15,78 +16,122 @@ const capitalizeFirstLetter = (string) => {
 const DétailsRoute = ({ rental }) => (
   <ScrollView>
     <View className='justify-center items-center'>
-
-      <SummaryChart/>
-
-       <View className="mt-5" style={styles.card}>
+      <SummaryChart />
+      <View className="mt-5" style={styles.card}>
         <Text>Nom de la location: {rental.rental_name}</Text>
         <Text>Adresse: {rental.address}</Text>
         <Text>Prix: {rental.price}</Text>
-        <Text>Description: {rental.description}</Text>       
+        <Text>Description: {rental.description}</Text>
       </View>
     </View>
   </ScrollView>
 );
 
 const LocatairesRoute = () => (
-  <View style={styles.sectionContent}>
-    <Text>Liste des locataires</Text>
+  <View>
   </View>
 );
+
+const TransactionForm = ({ onSubmit, type }) => {
+  const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShowDatePicker(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const handleSubmit = () => {
+    const rawDate = Math.floor(date.getTime() / 1000); // Convert date to seconds
+    console.log(`Raw date in seconds: ${rawDate}`);
+
+    const transaction = {
+      amount: parseFloat(amount),
+      description,
+      date: rawDate,
+      type
+    };
+    onSubmit(transaction);
+    setAmount('');
+    setDescription('');
+    setDate(new Date());
+  };
+
+  return (
+    <View style={styles.formContainer}>
+      <TextInput
+        style={styles.input}
+        placeholder="Amount"
+        value={amount}
+        onChangeText={setAmount}
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Description"
+        value={description}
+        onChangeText={setDescription}
+      />
+      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+        <Text style={styles.datePickerText}>{date.toDateString()}</Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="default"
+          onChange={handleDateChange}
+        />
+      )}
+      <Button title={`Add ${type}`} onPress={handleSubmit} />
+    </View>
+  );
+};
 
 const DépensesRoute = ({ rentalId }) => {
   const db = useSQLiteContext();
   const [expenses, setExpenses] = useState([]);
-  const [expenseName, setExpenseName] = useState('');
-  const [expenseAmount, setExpenseAmount] = useState('');
 
   useEffect(() => {
     fetchExpenses();
   }, []);
 
   const fetchExpenses = async () => {
-    const result = await db.getAllAsync(`SELECT * FROM Expenses WHERE rental_id = ?;`, [rentalId]);
+    const result = await db.getAllAsync(`SELECT * FROM Transactions WHERE rental_id = ? AND type = 'Expense';`, [rentalId]);
     setExpenses(result);
   };
 
-  const addExpense = async () => {
-    if (expenseName && expenseAmount) {
-      await db.runAsync(
-        `INSERT INTO Expenses (rental_id, expense_name, expense_amount, expense_date) VALUES (?, ?, ?, date('now'));`,
-        [rentalId, expenseName, parseFloat(expenseAmount)]
-      );
-      setExpenseName('');
-      setExpenseAmount('');
-      fetchExpenses(); // Refresh the expenses list
-    }
+  const handleAddExpense = async (expense) => {
+    console.log(`Adding expense with raw date: ${expense.date}`);
+    await db.runAsync(
+      `INSERT INTO Transactions (rental_id, amount, date, description, type) VALUES (?, ?, ?, ?, 'Expense')`,
+      [rentalId, expense.amount, expense.date, expense.description]
+    );
+    fetchExpenses(); // Refresh the expenses list
+  };
+
+  const handleDeleteExpense = async (id) => {
+    await db.runAsync(`DELETE FROM Transactions WHERE id = ?`, [id]);
+    fetchExpenses(); // Refresh the expenses list
   };
 
   return (
-    <View style={styles.sectionContent}>
-      <Text>Liste des dépenses</Text>
+    <View>
+      <TransactionForm onSubmit={handleAddExpense} type="Expense" />
       <FlatList
         data={expenses}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.expenseItem}>
-            <Text>{item.expense_name}: {item.expense_amount} €</Text>
+            <Text>{item.description}: {item.amount} €</Text>
+            <Text>Date: {new Date(item.date * 1000).toLocaleDateString()}</Text>
+            <Button title="Delete" onPress={() => handleDeleteExpense(item.id)} />
           </View>
         )}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Nom de la dépense"
-        value={expenseName}
-        onChangeText={setExpenseName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Montant de la dépense"
-        value={expenseAmount}
-        onChangeText={setExpenseAmount}
-        keyboardType="numeric"
-      />
-      <Button title="Ajouter Dépense" onPress={addExpense} />
     </View>
   );
 };
@@ -94,56 +139,44 @@ const DépensesRoute = ({ rentalId }) => {
 const RevenusRoute = ({ rentalId }) => {
   const db = useSQLiteContext();
   const [incomes, setIncomes] = useState([]);
-  const [incomeName, setIncomeName] = useState('');
-  const [incomeAmount, setIncomeAmount] = useState('');
 
   useEffect(() => {
     fetchIncomes();
   }, []);
 
   const fetchIncomes = async () => {
-    const result = await db.getAllAsync(`SELECT * FROM Income WHERE rental_id = ?;`, [rentalId]);
+    const result = await db.getAllAsync(`SELECT * FROM Transactions WHERE rental_id = ? AND type = 'Income';`, [rentalId]);
     setIncomes(result);
   };
 
-  const addIncome = async () => {
-    if (incomeName && incomeAmount) {
-      await db.runAsync(
-        `INSERT INTO Income (rental_id, income_name, income_amount, income_date) VALUES (?, ?, ?, date('now'));`,
-        [rentalId, incomeName, parseFloat(incomeAmount)]
-      );
-      setIncomeName('');
-      setIncomeAmount('');
-      fetchIncomes(); // Refresh the incomes list
-    }
+  const handleAddIncome = async (income) => {
+    console.log(`Adding income with raw date: ${income.date}`);
+    await db.runAsync(
+      `INSERT INTO Transactions (rental_id, amount, date, description, type) VALUES (?, ?, ?, ?, 'Income')`,
+      [rentalId, income.amount, income.date, income.description]
+    );
+    fetchIncomes(); // Refresh the incomes list
+  };
+
+  const handleDeleteIncome = async (id) => {
+    await db.runAsync(`DELETE FROM Transactions WHERE id = ?`, [id]);
+    fetchIncomes(); // Refresh the incomes list
   };
 
   return (
-    <View style={styles.sectionContent}>
-      <Text>Liste des revenus</Text>
+    <View>
+      <TransactionForm onSubmit={handleAddIncome} type="Income" />
       <FlatList
         data={incomes}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.incomeItem}>
-            <Text>{item.income_name}: {item.income_amount} €</Text>
+            <Text>{item.description}: {item.amount} €</Text>
+            <Text>Date: {new Date(item.date * 1000).toLocaleDateString()}</Text>
+            <Button title="Delete" onPress={() => handleDeleteIncome(item.id)} />
           </View>
         )}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Nom du revenu"
-        value={incomeName}
-        onChangeText={setIncomeName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Montant du revenu"
-        value={incomeAmount}
-        onChangeText={setIncomeAmount}
-        keyboardType="numeric"
-      />
-      <Button title="Ajouter Revenu" onPress={addIncome} />
     </View>
   );
 };
@@ -222,21 +255,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   tabBar: {
-    backgroundColor: '#736ced', // Top bar background color
+    backgroundColor: '#736ced',
   },
   indicator: {
-    backgroundColor: '#fff', // Indicator color
+    backgroundColor: '#fff',
   },
   tabBarLabel: {
-    fontFamily: 'Poppins-SemiBold', // Applying Poppins-SemiBold font
-    textAlign: 'center', // Center the text
-    textTransform: 'capitalize', // Ensure first letter is uppercase
+    fontFamily: 'Poppins-SemiBold',
+    textAlign: 'center',
+    textTransform: 'capitalize',
     fontWeight: 'bold',
   },
   tab: {
-    marginRight: 9, // Adjust the horizontal margin to increase/decrease the space between tabs
-    marginLeft: 5, // Adjust the horizontal margin to increase/decrease the space between tabs
-},
+    marginRight: 9,
+    marginLeft: 5,
+  },
   sectionContent: {
     backgroundColor: '#fff',
     padding: 15,
@@ -268,11 +301,18 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 15,
     backgroundColor: "white",
-    width:'92%',
+    width: '92%',
     elevation: 8,
     shadowColor: "#000",
     shadowRadius: 8,
     shadowOffset: { height: 6, width: 0 },
     shadowOpacity: 0.15,
   },
+  datePickerText: {
+    color: 'blue',
+    marginBottom: 10,
+  },
+  formContainer: {
+    padding: 15,
+  }
 });
