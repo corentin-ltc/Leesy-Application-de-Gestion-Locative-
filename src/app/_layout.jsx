@@ -138,7 +138,7 @@ const RootLayout = () => {
             </View>
           ),
            headerStyle: {
-            backgroundColor:'#14bdeb',
+            backgroundColor:'#736ced',
             borderBottomWidth: 0,
            },
            headerTitle: () =>(

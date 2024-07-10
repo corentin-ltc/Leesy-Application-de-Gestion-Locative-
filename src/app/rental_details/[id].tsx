@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, FlatList, Dimensions, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -91,89 +91,44 @@ const TransactionForm = ({ onSubmit, type }) => {
   );
 };
 
-const DépensesRoute = ({ rentalId }) => {
+const TransactionsRoute = ({ rentalId, type }) => {
   const db = useSQLiteContext();
-  const [expenses, setExpenses] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+
+  const fetchTransactions = useCallback(async () => {
+    const result = await db.getAllAsync(`SELECT * FROM Transactions WHERE rental_id = ? AND type = ?;`, [rentalId, type]);
+    setTransactions(result);
+  }, [db, rentalId, type]);
 
   useEffect(() => {
-    fetchExpenses();
-  }, []);
+    fetchTransactions();
+  }, [fetchTransactions]);
 
-  const fetchExpenses = async () => {
-    const result = await db.getAllAsync(`SELECT * FROM Transactions WHERE rental_id = ? AND type = 'Expense';`, [rentalId]);
-    setExpenses(result);
-  };
-
-  const handleAddExpense = async (expense) => {
-    console.log(`Adding expense with raw date: ${expense.date}`);
+  const handleAddTransaction = useCallback(async (transaction) => {
+    console.log(`Adding ${type.toLowerCase()} with raw date: ${transaction.date}`);
     await db.runAsync(
-      `INSERT INTO Transactions (rental_id, amount, date, description, type) VALUES (?, ?, ?, ?, 'Expense')`,
-      [rentalId, expense.amount, expense.date, expense.description]
+      `INSERT INTO Transactions (rental_id, amount, date, description, type) VALUES (?, ?, ?, ?, ?)`,
+      [rentalId, transaction.amount, transaction.date, transaction.description, type]
     );
-    fetchExpenses(); // Refresh the expenses list
-  };
+    fetchTransactions(); // Refresh the transactions list
+  }, [db, fetchTransactions, rentalId, type]);
 
-  const handleDeleteExpense = async (id) => {
+  const handleDeleteTransaction = useCallback(async (id) => {
     await db.runAsync(`DELETE FROM Transactions WHERE id = ?`, [id]);
-    fetchExpenses(); // Refresh the expenses list
-  };
+    fetchTransactions(); // Refresh the transactions list
+  }, [db, fetchTransactions]);
 
   return (
     <View>
-      <TransactionForm onSubmit={handleAddExpense} type="Expense" />
+      <TransactionForm onSubmit={handleAddTransaction} type={type} />
       <FlatList
-        data={expenses}
+        data={transactions}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.expenseItem}>
+          <View style={styles.transactionItem}>
             <Text>{item.description}: {item.amount} €</Text>
             <Text>Date: {new Date(item.date * 1000).toLocaleDateString()}</Text>
-            <Button title="Delete" onPress={() => handleDeleteExpense(item.id)} />
-          </View>
-        )}
-      />
-    </View>
-  );
-};
-
-const RevenusRoute = ({ rentalId }) => {
-  const db = useSQLiteContext();
-  const [incomes, setIncomes] = useState([]);
-
-  useEffect(() => {
-    fetchIncomes();
-  }, []);
-
-  const fetchIncomes = async () => {
-    const result = await db.getAllAsync(`SELECT * FROM Transactions WHERE rental_id = ? AND type = 'Income';`, [rentalId]);
-    setIncomes(result);
-  };
-
-  const handleAddIncome = async (income) => {
-    console.log(`Adding income with raw date: ${income.date}`);
-    await db.runAsync(
-      `INSERT INTO Transactions (rental_id, amount, date, description, type) VALUES (?, ?, ?, ?, 'Income')`,
-      [rentalId, income.amount, income.date, income.description]
-    );
-    fetchIncomes(); // Refresh the incomes list
-  };
-
-  const handleDeleteIncome = async (id) => {
-    await db.runAsync(`DELETE FROM Transactions WHERE id = ?`, [id]);
-    fetchIncomes(); // Refresh the incomes list
-  };
-
-  return (
-    <View>
-      <TransactionForm onSubmit={handleAddIncome} type="Income" />
-      <FlatList
-        data={incomes}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.incomeItem}>
-            <Text>{item.description}: {item.amount} €</Text>
-            <Text>Date: {new Date(item.date * 1000).toLocaleDateString()}</Text>
-            <Button title="Delete" onPress={() => handleDeleteIncome(item.id)} />
+            <Button title="Delete" onPress={() => handleDeleteTransaction(item.id)} />
           </View>
         )}
       />
@@ -194,23 +149,23 @@ const RentalDetails = () => {
   const [rental, setRental] = useState(null);
   const db = useSQLiteContext();
 
-  useEffect(() => {
-    fetchRentalDetails();
-  }, [id]);
-
-  const fetchRentalDetails = async () => {
+  const fetchRentalDetails = useCallback(async () => {
     const result = await db.getAllAsync(`SELECT * FROM Rental WHERE id = ?;`, [id]);
     if (result.length > 0) {
       setRental(result[0]);
     }
-  };
+  }, [db, id]);
 
-  const renderScene = SceneMap({
+  useEffect(() => {
+    fetchRentalDetails();
+  }, [fetchRentalDetails]);
+
+  const renderScene = useMemo(() => SceneMap({
     details: () => <DétailsRoute rental={rental} />,
     locataires: LocatairesRoute,
-    revenus: () => <RevenusRoute rentalId={id} />,
-    dépenses: () => <DépensesRoute rentalId={id} />,
-  });
+    revenus: () => <TransactionsRoute rentalId={id} type="Income" />,
+    dépenses: () => <TransactionsRoute rentalId={id} type="Expense" />,
+  }), [id, rental]);
 
   const renderTabBar = props => (
     <TabBar
@@ -287,12 +242,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
-  expenseItem: {
-    padding: 10,
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-  },
-  incomeItem: {
+  transactionItem: {
     padding: 10,
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
