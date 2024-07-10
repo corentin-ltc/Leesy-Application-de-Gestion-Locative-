@@ -108,14 +108,18 @@ export default function SummaryChart({ rentalId }) {
   const modifiedMaxValue = incrementFirstCharacterAndZeroOut(maxValue);
   const stepValue = parseInt(modifiedMaxValue) / 4;
 
-  console.log(chartData);
+  const totalAmount = chartData.reduce((total, item) => total + item.value, 0);
+  const chartYear = currentDate.getFullYear();
+  const isRevenue = selectedOptions === 'Revenus';
+
   return (
     <View className='w-full mt-6' style={styles.card}>
-      <Text className='font-pmedium text-black text-2xl'> 
-        <Text className='text-green-600'> 
-          {chartData.reduce((total, item) => total + item.value, 0)} € 
-          </Text>
-          gagnés en 
+      <Text className='font-pmedium text-black text-2xl'>
+        <Text className={`${isRevenue ? 'text-green-600' : 'text-red-600'}`}>
+          {totalAmount} € 
+        </Text>
+        {isRevenue ? " gagnés en " : " dépensés en "}
+        {chartYear}
       </Text>
       <View className='items-center justify-center mt-2'>
         <BarChart
@@ -135,6 +139,7 @@ export default function SummaryChart({ rentalId }) {
           animationDuration={400}
           showGradient
           stepValue={stepValue}
+          
         />
       </View>
       <Text style={styles.maxValueText}>
@@ -186,6 +191,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { height: 6, width: 0 },
     shadowOpacity: 0.15,
+  },
+  revenueText: {
+    color: 'green',
+  },
+  expenseText: {
+    color: 'red',
   },
   maxValueText: {
     fontSize: 16,
