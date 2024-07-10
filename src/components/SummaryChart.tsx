@@ -111,8 +111,11 @@ export default function SummaryChart({ rentalId }) {
   console.log(chartData);
   return (
     <View className='w-full mt-6' style={styles.card}>
-      <Text className='font-pmedium text-black text-2xl'>
-        Cette année: <Text className='text-green-600'> total € </Text>
+      <Text className='font-pmedium text-black text-2xl'> 
+        <Text className='text-green-600'> 
+          {chartData.reduce((total, item) => total + item.value, 0)} € 
+          </Text>
+          gagnés en 
       </Text>
       <View className='items-center justify-center mt-2'>
         <BarChart
