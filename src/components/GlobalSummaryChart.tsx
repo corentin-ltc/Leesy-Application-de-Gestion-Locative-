@@ -11,13 +11,14 @@ enum Period {
   year = "year"
 }
 
-export default function SummaryChart({ rentalId }) {
+export default function GlobalSummaryChart({ rentalId }) {
   const db = useSQLiteContext();
   const [chartData, setChartData] = React.useState([]);
   const [chartPeriod, setChartPeriod] = React.useState<Period>(Period.year);
   const [currentDate, setCurrentDate] = React.useState<Date>(new Date());
   const [transactionType, setTransactionType] = React.useState<"Income" | "Expense">("Income");
   const options = ['Revenus', 'Dépenses'];
+  const [chartKey, setChartKey] = React.useState(0);
   const [selectedOptions, setSelectedOptions] = React.useState('Revenus');
 
   React.useEffect(() => {
@@ -27,6 +28,7 @@ export default function SummaryChart({ rentalId }) {
           const { startDate, endDate } = getYearRange(currentDate);
           const data = await fetchMonthlyData(startDate, endDate, transactionType, rentalId);
           setChartData(processMonthlyData(data, transactionType));
+          setChartKey((prev) => prev + 1);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -39,14 +41,14 @@ export default function SummaryChart({ rentalId }) {
     setTransactionType(selectedOptions === 'Revenus' ? 'Income' : 'Expense');
   }, [selectedOptions]);
 
-  const fetchMonthlyData = async (startDate: number, endDate: number, type: "Income" | "Expense", rentalId: number) => {
+  const fetchMonthlyData = async (startDate: number, endDate: number, type: "Income" | "Expense") => {
     try {
       const query = `
         SELECT
           strftime('%m', date, 'unixepoch') AS month,
           SUM(amount) as total
         FROM Transactions
-        WHERE date >= ? AND date <= ? AND type = ? AND rental_id = ?
+        WHERE date >= ? AND date <= ? AND type = ?
         GROUP BY month
         ORDER BY month ASC
       `;
@@ -81,30 +83,67 @@ export default function SummaryChart({ rentalId }) {
     setCurrentDate(new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)));
   };
 
+  const findMaxValue = () => {
+    if (chartData.length === 0) return 0;
+    return Math.max(...chartData.map(item => item.value));
+  };
+
+  const getNumberOfDigits = (num) => {
+    return num.toString().length;
+  };
+
+  const incrementFirstCharacterAndZeroOut = (num) => {
+    let numStr = num.toString();
+    let firstChar = numStr.charAt(0);
+
+    if (firstChar === '9') {
+      return '10' + '0'.repeat(numStr.length - 1);
+    } else {
+      let incrementedChar = (parseInt(firstChar) + 1).toString();
+      let modifiedValue = incrementedChar + '0'.repeat(numStr.length - 1);
+      return parseInt(modifiedValue) < 10 ? '20' : modifiedValue;
+    }
+  };
+
+  const maxValue = findMaxValue();
+  const maxDigits = getNumberOfDigits(maxValue);
+  const modifiedMaxValue = incrementFirstCharacterAndZeroOut(maxValue);
+  const stepValue = parseInt(modifiedMaxValue) / 4;
+
+  const totalAmount = chartData.reduce((total, item) => total + item.value, 0);
+  const chartYear = currentDate.getFullYear();
+  const isRevenue = selectedOptions === 'Revenus';
+
   return (
     <View className='w-full mt-6' style={styles.card}>
       <Text className='font-pmedium text-black text-2xl'>
-        Cette année: <Text className='text-green-600'> total € </Text>
+        <Text className={`${isRevenue ? 'text-green-600' : 'text-red-600'}`}>
+          {totalAmount} € 
+        </Text>
+        {isRevenue ? " gagnés en " : " dépensés en "}
+        {chartYear}
       </Text>
       <View className='items-center justify-center mt-2'>
         <BarChart
-          key={chartPeriod}
+          key={chartKey}
           data={chartData}
           height={200}
           width={280}
           barWidth={18}
           barBorderRadius={3}
-          spacing={20}
+          spacing={5}
           noOfSections={4}
           yAxisThickness={0}
           xAxisThickness={0}
           xAxisLabelTextStyle={{ color: "gray" }}
           yAxisTextStyle={{ color: "gray" }}
           isAnimated
+          
           animationDuration={400}
           showGradient
+          stepValue={stepValue}
         />
-      </View>
+      </View>      
       <View className='flex-row justify-between mt-4'>
         <TouchableOpacity className='items-center' onPress={handlePreviousYear}>
           <SymbolView 
@@ -145,5 +184,29 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { height: 6, width: 0 },
     shadowOpacity: 0.15,
+  },
+  revenueText: {
+    color: 'green',
+  },
+  expenseText: {
+    color: 'red',
+  },
+  maxValueText: {
+    fontSize: 16,
+    color: 'black',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  maxDigitsText: {
+    fontSize: 14,
+    color: 'gray',
+    textAlign: 'center',
+    marginTop: 5,
+  },
+  modifiedMaxValueText: {
+    fontSize: 14,
+    color: 'blue',
+    textAlign: 'center',
+    marginTop: 5,
   },
 });

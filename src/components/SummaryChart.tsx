@@ -143,16 +143,7 @@ export default function SummaryChart({ rentalId }) {
           showGradient
           stepValue={stepValue}
         />
-      </View>
-      <Text style={styles.maxValueText}>
-        Max Value: {maxValue}
-      </Text>
-      <Text style={styles.maxDigitsText}>
-        Number of Digits: {maxDigits}
-      </Text>
-      <Text style={styles.modifiedMaxValueText}>
-        Modified Max Value: {modifiedMaxValue}
-      </Text>
+      </View>      
       <View className='flex-row justify-between mt-4'>
         <TouchableOpacity className='items-center' onPress={handlePreviousYear}>
           <SymbolView 
