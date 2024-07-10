@@ -18,6 +18,7 @@ export default function SummaryChart({ rentalId }) {
   const [currentDate, setCurrentDate] = React.useState<Date>(new Date());
   const [transactionType, setTransactionType] = React.useState<"Income" | "Expense">("Income");
   const options = ['Revenus', 'Dépenses'];
+  const [chartKey, setChartKey] = React.useState(0);
   const [selectedOptions, setSelectedOptions] = React.useState('Revenus');
 
   React.useEffect(() => {
@@ -27,6 +28,7 @@ export default function SummaryChart({ rentalId }) {
           const { startDate, endDate } = getYearRange(currentDate);
           const data = await fetchMonthlyData(startDate, endDate, transactionType, rentalId);
           setChartData(processMonthlyData(data, transactionType));
+          setChartKey((prev) => prev + 1);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -123,7 +125,7 @@ export default function SummaryChart({ rentalId }) {
       </Text>
       <View className='items-center justify-center mt-2'>
         <BarChart
-          key={chartPeriod}
+          key={chartKey}
           data={chartData}
           height={200}
           width={280}
@@ -136,10 +138,10 @@ export default function SummaryChart({ rentalId }) {
           xAxisLabelTextStyle={{ color: "gray" }}
           yAxisTextStyle={{ color: "gray" }}
           isAnimated
+          
           animationDuration={400}
           showGradient
           stepValue={stepValue}
-          
         />
       </View>
       <Text style={styles.maxValueText}>
