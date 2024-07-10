@@ -186,4 +186,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  xpProgress: {
+    width:"50%",
+    backgroundColor: ""
+  },
 });
