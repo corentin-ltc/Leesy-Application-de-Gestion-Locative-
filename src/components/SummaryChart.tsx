@@ -8,13 +8,13 @@ import { SymbolView, SFSymbol } from 'expo-symbols';
 
 enum Period {
   month = "month",
-  sixMonths = "sixMonths"
+  year = "year"
 }
 
 export default function SummaryChart({ rentalId }) {
   const db = useSQLiteContext();
   const [chartData, setChartData] = React.useState([]);
-  const [chartPeriod, setChartPeriod] = React.useState<Period>(Period.sixMonths);
+  const [chartPeriod, setChartPeriod] = React.useState<Period>(Period.year);
   const [currentDate, setCurrentDate] = React.useState<Date>(new Date());
   const [transactionType, setTransactionType] = React.useState<"Income" | "Expense">("Income");
   const options = ['Revenus', 'Dépenses'];
@@ -23,8 +23,8 @@ export default function SummaryChart({ rentalId }) {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        if (chartPeriod === Period.sixMonths) {
-          const { startDate, endDate } = getSixMonthRange(currentDate);
+        if (chartPeriod === Period.year) {
+          const { startDate, endDate } = getYearRange(currentDate);
           const data = await fetchMonthlyData(startDate, endDate, transactionType, rentalId);
           setChartData(processMonthlyData(data, transactionType));
         }
@@ -60,33 +60,32 @@ export default function SummaryChart({ rentalId }) {
     }
   };
 
-  const getSixMonthRange = (date: Date) => {
-    const startOfPeriod = new Date(date);
-    startOfPeriod.setMonth(date.getMonth() - 5);
-    startOfPeriod.setDate(1);
-    startOfPeriod.setHours(0, 0, 0, 0);
+  const getYearRange = (date: Date) => {
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    startOfYear.setHours(0, 0, 0, 0);
 
-    const endOfPeriod = new Date(date);
-    endOfPeriod.setHours(23, 59, 59, 999);
+    const endOfYear = new Date(date.getFullYear(), 11, 31);
+    endOfYear.setHours(23, 59, 59, 999);
 
     return {
-      startDate: Math.floor(startOfPeriod.getTime() / 1000),
-      endDate: Math.floor(endOfPeriod.getTime() / 1000)
+      startDate: Math.floor(startOfYear.getTime() / 1000),
+      endDate: Math.floor(endOfYear.getTime() / 1000)
     };
   };
 
-  const handlePreviousPeriod = () => {
-    setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 6)));
+  const handlePreviousYear = () => {
+    setCurrentDate(new Date(currentDate.setFullYear(currentDate.getFullYear() - 1)));
   };
 
-  const handleNextPeriod = () => {
-    setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 6)));
+  const handleNextYear = () => {
+    setCurrentDate(new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)));
   };
 
+  console.log(chartData);
   return (
     <View className='w-full mt-6' style={styles.card}>
       <Text className='font-pmedium text-black text-2xl'>
-        Période: <Text className='text-green-600'> total € </Text>
+        Cette année: <Text className='text-green-600'> total € </Text>
       </Text>
       <View className='items-center justify-center mt-2'>
         <BarChart
@@ -108,7 +107,7 @@ export default function SummaryChart({ rentalId }) {
         />
       </View>
       <View className='flex-row justify-between mt-4'>
-        <TouchableOpacity className='items-center' onPress={handlePreviousPeriod}>
+        <TouchableOpacity className='items-center' onPress={handlePreviousYear}>
           <SymbolView 
             name="chevron.left.circle.fill"
             size={35}
@@ -123,7 +122,7 @@ export default function SummaryChart({ rentalId }) {
             onOptionPress={setSelectedOptions}
           />
         </View>
-        <TouchableOpacity className='items-center' onPress={handleNextPeriod}>
+        <TouchableOpacity className='items-center' onPress={handleNextYear}>
           <SymbolView 
             name="chevron.right.circle.fill"
             size={35}
