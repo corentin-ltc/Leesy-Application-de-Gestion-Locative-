@@ -188,8 +188,8 @@ const RentalDetails = () => {
   const [routes] = useState([
     { key: 'details', title: 'Détails' },
     { key: 'locataires', title: 'Locataires' },
-    { key: 'dépenses', title: 'Dépenses' },
     { key: 'revenus', title: 'Revenus' },
+    { key: 'dépenses', title: 'Dépenses' },
   ]);
   const [rental, setRental] = useState(null);
   const db = useSQLiteContext();
@@ -208,8 +208,8 @@ const RentalDetails = () => {
   const renderScene = SceneMap({
     details: () => <DétailsRoute rental={rental} />,
     locataires: LocatairesRoute,
-    dépenses: () => <DépensesRoute rentalId={id} />,
     revenus: () => <RevenusRoute rentalId={id} />,
+    dépenses: () => <DépensesRoute rentalId={id} />,
   });
 
   const renderTabBar = props => (

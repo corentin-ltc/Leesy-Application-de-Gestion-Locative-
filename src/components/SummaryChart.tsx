@@ -93,11 +93,13 @@ export default function SummaryChart({ rentalId }) {
   const incrementFirstCharacterAndZeroOut = (num) => {
     let numStr = num.toString();
     let firstChar = numStr.charAt(0);
+
     if (firstChar === '9') {
       return '10' + '0'.repeat(numStr.length - 1);
     } else {
       let incrementedChar = (parseInt(firstChar) + 1).toString();
-      return incrementedChar + '0'.repeat(numStr.length - 1);
+      let modifiedValue = incrementedChar + '0'.repeat(numStr.length - 1);
+      return parseInt(modifiedValue) < 10 ? '20' : modifiedValue;
     }
   };
 
