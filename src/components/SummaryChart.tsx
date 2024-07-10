@@ -3,6 +3,7 @@ import * as React from 'react';
 import { BarChart } from "react-native-gifted-charts";
 import { useSQLiteContext } from 'expo-sqlite';
 import { processWeeklyData } from '@/utils/dataProcessHelpers';
+import { SegmentedControl } from './SegmentedControl';
 
 enum Period {
   week = "week",
@@ -16,7 +17,10 @@ export default function SummaryChart() {
   const [chartPeriod, setChartPeriod] = React.useState<Period>(Period.month);
   const [currentDate, setCurrentDate] = React.useState<Date>(new Date());
   const [currentEndDate, setCurrentEndDate] = React.useState<Date>(new Date());
+  const [chartKey, setChartKey] = React.useState<number>(0);
   const [transactionType, setTransactionType] = React.useState<"Income" | "Expense">("Income");
+  const options =  ['Revenus', 'Dépenses'];
+  const [selectedOptions, setSelectedOptions] = React.useState('Revenus');
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +30,8 @@ export default function SummaryChart() {
           setCurrentEndDate(new Date(endDate));
 
           const data = await fetchWeeklyData(startDate, endDate, transactionType);
-          setChartData(processWeeklyData(data!, transactionType))
+          setChartData(processWeeklyData(data!, transactionType));
+          setChartKey((prev) => prev + 1);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -34,6 +39,10 @@ export default function SummaryChart() {
     };
     fetchData();
   }, [chartPeriod, currentDate, transactionType]);
+
+  React.useEffect(() => {
+    setTransactionType(selectedOptions === 'Revenus' ? 'Income' : 'Expense');
+  }, [selectedOptions]);
 
   const fetchWeeklyData = async (startDate: number, endDate: number, type: "Income" | "Expense") => {
     try {
@@ -78,6 +87,7 @@ export default function SummaryChart() {
       </Text>
       <View className='items-center justify-center mt-2'>
         <BarChart
+          key={chartKey}
           data={chartData}
           height={200}
           width={280}
@@ -92,6 +102,13 @@ export default function SummaryChart() {
           isAnimated
           animationDuration={400}
           showGradient
+        />
+      </View>
+      <View className='justify-center items-center mt-2'>
+        <SegmentedControl
+          options={options}
+          selectedOption={selectedOptions}
+          onOptionPress={setSelectedOptions}
         />
       </View>
     </View>
