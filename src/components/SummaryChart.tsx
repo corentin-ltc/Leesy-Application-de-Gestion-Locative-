@@ -81,6 +81,31 @@ export default function SummaryChart({ rentalId }) {
     setCurrentDate(new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)));
   };
 
+  const findMaxValue = () => {
+    if (chartData.length === 0) return 0;
+    return Math.max(...chartData.map(item => item.value));
+  };
+
+  const getNumberOfDigits = (num) => {
+    return num.toString().length;
+  };
+
+  const incrementFirstCharacterAndZeroOut = (num) => {
+    let numStr = num.toString();
+    let firstChar = numStr.charAt(0);
+    if (firstChar === '9') {
+      return '10' + '0'.repeat(numStr.length - 1);
+    } else {
+      let incrementedChar = (parseInt(firstChar) + 1).toString();
+      return incrementedChar + '0'.repeat(numStr.length - 1);
+    }
+  };
+
+  const maxValue = findMaxValue();
+  const maxDigits = getNumberOfDigits(maxValue);
+  const modifiedMaxValue = incrementFirstCharacterAndZeroOut(maxValue);
+  const stepValue = parseInt(modifiedMaxValue) / 4;
+
   console.log(chartData);
   return (
     <View className='w-full mt-6' style={styles.card}>
@@ -104,8 +129,18 @@ export default function SummaryChart({ rentalId }) {
           isAnimated
           animationDuration={400}
           showGradient
+          stepValue={stepValue}
         />
       </View>
+      <Text style={styles.maxValueText}>
+        Max Value: {maxValue}
+      </Text>
+      <Text style={styles.maxDigitsText}>
+        Number of Digits: {maxDigits}
+      </Text>
+      <Text style={styles.modifiedMaxValueText}>
+        Modified Max Value: {modifiedMaxValue}
+      </Text>
       <View className='flex-row justify-between mt-4'>
         <TouchableOpacity className='items-center' onPress={handlePreviousYear}>
           <SymbolView 
@@ -146,5 +181,23 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { height: 6, width: 0 },
     shadowOpacity: 0.15,
+  },
+  maxValueText: {
+    fontSize: 16,
+    color: 'black',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  maxDigitsText: {
+    fontSize: 14,
+    color: 'gray',
+    textAlign: 'center',
+    marginTop: 5,
+  },
+  modifiedMaxValueText: {
+    fontSize: 14,
+    color: 'blue',
+    textAlign: 'center',
+    marginTop: 5,
   },
 });
