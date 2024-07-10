@@ -22,7 +22,7 @@ const SegmentedControl: React.FC<SegmentedControlProps> = React.memo(
     const { width: windowWidth } = useWindowDimensions();
 
     const internalPadding = 20;
-    const segmentedControlWidth = windowWidth - 40;
+    const segmentedControlWidth = windowWidth - 200;
 
     const itemWidth =
       (segmentedControlWidth - internalPadding) / options.length;
@@ -69,7 +69,7 @@ const SegmentedControl: React.FC<SegmentedControlProps> = React.memo(
                 styles.labelContainer,
               ]}
             >
-              <Text style={styles.label}>{option}</Text>
+              <Text className='font-pregular text-base'>{option}</Text>
             </TouchableOpacity>
           );
         })}
@@ -81,7 +81,7 @@ const SegmentedControl: React.FC<SegmentedControlProps> = React.memo(
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    height: 55,
+    height: 40,
     backgroundColor: '#f5f5f9'
   },
   activeBox: {
@@ -100,10 +100,6 @@ const styles = StyleSheet.create({
     top: '10%',
   },
   labelContainer: { justifyContent: 'center', alignItems: 'center' },
-  label: {
-    fontFamily: 'SF-Compact-Rounded-Medium',
-    fontSize: 16,
-  },
 });
 
 export { SegmentedControl };
