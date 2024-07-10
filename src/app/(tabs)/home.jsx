@@ -22,6 +22,7 @@ import { Auth } from "../../components/Auth"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants"
 import CustomButton from '../../components/CustomButton';
+import GlobalSummaryChart from '@/components/GlobalSummaryChart';
 import ButtonAdvice from '../../components/ButtonAdvice';
 
 export default function Home() {
@@ -89,8 +90,12 @@ export default function Home() {
     </GestureHandlerRootView>
 
       </View>
+      <View className="justify-center items-center">
+        <GlobalSummaryChart />
+        </View>
         </View>
                 </View>
+
     </ScrollView>
     </View>
   );

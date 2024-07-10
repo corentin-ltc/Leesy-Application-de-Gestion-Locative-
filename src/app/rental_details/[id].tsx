@@ -16,7 +16,7 @@ const capitalizeFirstLetter = (string) => {
 const DétailsRoute = ({ rental }) => (
   <ScrollView>
     <View className='justify-center items-center'>
-      <SummaryChart />
+      <SummaryChart rentalId={rental.id} />
       <View className="mt-5" style={styles.card}>
         <Text>Nom de la location: {rental.rental_name}</Text>
         <Text>Adresse: {rental.address}</Text>
@@ -302,6 +302,17 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: "white",
     width: '92%',
+    elevation: 8,
+    shadowColor: "#000",
+    shadowRadius: 8,
+    shadowOffset: { height: 6, width: 0 },
+    shadowOpacity: 0.15,
+  },
+  rental_title: {
+    padding: 15,
+    borderRadius: 15,
+    backgroundColor: "#736ced",
+    width: '70%',
     elevation: 8,
     shadowColor: "#000",
     shadowRadius: 8,

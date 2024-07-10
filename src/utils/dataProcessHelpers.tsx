@@ -19,13 +19,10 @@ export const processWeeklyData = (data: {
         const dayIndex = item.day_of_week;
         if (dayIndex >= 0 && dayIndex < 7) {
           barData[dayIndex].value = item.total;
-          if (item.total < 100) {
-            barData[dayIndex].frontColor = "#d1d5db"; // gray for zero values
-            barData[dayIndex].gradientColor = "#d1d5db"; // gray for zero values
-          } else {
+          
             barData[dayIndex].frontColor = isIncome ? "#d3ff00" : "#ffab00"; // default income/expense colors
             barData[dayIndex].gradientColor = isIncome ? "#12ff00" : "#ff0000"; // default income/expense gradients
-          }
+          
         } else {
           console.error(`Invalid day of week index: ${item.day_of_week}`);
         }

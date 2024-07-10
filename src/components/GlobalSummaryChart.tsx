@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, processColor } from 'react-native';
 import * as React from 'react';
 import { BarChart } from "react-native-gifted-charts";
 import { useSQLiteContext } from 'expo-sqlite';
@@ -11,7 +11,7 @@ enum Period {
   year = "year"
 }
 
-export default function SummaryChart({ rentalId }) {
+export default function GlobalSummaryChart() {
   const db = useSQLiteContext();
   const [chartData, setChartData] = React.useState([]);
   const [chartPeriod, setChartPeriod] = React.useState<Period>(Period.month);
@@ -29,7 +29,7 @@ export default function SummaryChart({ rentalId }) {
           const { endDate, startDate } = getWeekRange(currentDate);
           setCurrentEndDate(new Date(endDate));
 
-          const data = await fetchWeeklyData(startDate, endDate, transactionType, rentalId);
+          const data = await fetchWeeklyData(startDate, endDate, transactionType);
           setChartData(processWeeklyData(data!, transactionType));
           setChartKey((prev) => prev + 1);
         }
@@ -38,25 +38,25 @@ export default function SummaryChart({ rentalId }) {
       }
     };
     fetchData();
-  }, [chartPeriod, currentDate, transactionType, rentalId]);
+  }, [chartPeriod, currentDate, transactionType]);
 
   React.useEffect(() => {
     setTransactionType(selectedOptions === 'Revenus' ? 'Income' : 'Expense');
   }, [selectedOptions]);
 
-  const fetchWeeklyData = async (startDate: number, endDate: number, type: "Income" | "Expense", rentalId: number) => {
+  const fetchWeeklyData = async (startDate: number, endDate: number, type: "Income" | "Expense") => {
     try {
       const query = `
         SELECT
           strftime('%w', date, 'unixepoch') AS day_of_week,
           SUM(amount) as total
         FROM Transactions
-        WHERE date >= ? AND date <= ? AND type = ? AND rental_id = ?
+        WHERE date >= ? AND date <= ? AND type = ?
         GROUP BY day_of_week
         ORDER BY day_of_week ASC
       `;
 
-      const result = await db.getAllAsync(query, [startDate, endDate, type, rentalId]);
+      const result = await db.getAllAsync(query, [startDate, endDate, type]);
 
       return result;
     } catch (e) {
