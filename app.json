@@ -14,6 +14,13 @@
           "origin": "https://n"
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Sélectionner et télécharger des documents.",
+          "cameraPermission": "Autoriser Leesy à accéder à votre caméra."
+        }
+      ],
       "expo-apple-authentication",
       "expo-asset"
     ],

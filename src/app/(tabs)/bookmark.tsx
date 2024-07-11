@@ -1,10 +1,15 @@
 import PropertyCard from '../../components/PropertyCard';
-import AddCard from '../../components/AddCard';
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import AddButton from '../../components/AddButton';
+import { StyleSheet, Text, View, ScrollView, useWindowDimensions, } from "react-native";
 import { useSQLiteContext } from 'expo-sqlite/next';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Link, Redirect, router} from 'expo-router';
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+import AddRental from '../forms/AddRental';
 
 export default function Bookmark() {
   const [rental, setRental] = useState([]);
@@ -49,6 +54,27 @@ export default function Bookmark() {
     });
   }
 
+  const [device, setDevice] = useState(false);
+  const { width } = useWindowDimensions();
+  const [theme, setTheme] = useState("dim");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const bottomSheetModalRef = useRef(null);
+
+  const snapPoints = ["100%"];
+
+  function handlePresentModal() {
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 100);
+  }
+
+  function handleCloseModal() {
+    bottomSheetModalRef.current?.dismiss();
+    setIsOpen(false);
+  }
+
   return (
     <View className="h-full bg-primary">
       <ScrollView >
@@ -67,11 +93,22 @@ export default function Bookmark() {
                 handlePress={() => router.push(`./../rental_details/${rental.id}`)}
               />
             ))}
-            <AddCard handlePress={() => router.push('./../forms/AddRental')} />
           </View>
           <View className="bg-secondary h-52 mt-52"></View>
         </View>
       </ScrollView>
+      <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={0}
+            snapPoints={snapPoints}
+            backgroundStyle={{ borderRadius: 50 }}
+            onDismiss={() => setIsOpen(false)}
+            >
+            <View>
+              <AddRental onClose={handleCloseModal}/>
+            </View>
+          </BottomSheetModal>
+            <AddButton handlePress={handlePresentModal} />
     </View>
   );
 }

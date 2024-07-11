@@ -86,8 +86,6 @@ export default function Home() {
         <View className="w-full h-16 bg-primary"></View>
         <View className="w-full h-16 bg-secondary"></View>
       <View>
-    <GestureHandlerRootView className="flex-1">
-    </GestureHandlerRootView>
 
       </View>
       <View className="justify-center items-center">

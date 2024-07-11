@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { useNavigation } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import CustomButton from '@/components/CustomButton';
+import { images } from '../../constants'
+import { ScrollView } from 'react-native-gesture-handler';
 
-export default function AddRental() {
+
+export default function AddRental({ onClose }) {
   const [newRental, setNewRental] = useState({
     rental_name: '',
     rental_city: '',
@@ -38,13 +43,25 @@ export default function AddRental() {
         ]
       );
     });
-    navigation.pop(); // Navigate back to the previous screen after adding rental
+    onClose();
   }
 
   return (
-    <SafeAreaView >
+    
+    <View >
+      <View className='flex-row justify-between items-center'>
 
-    <View className='h-full w-full ml-3'>
+      <TouchableOpacity onPress={ onClose }>
+       <Ionicons name="close-circle" size={40} color="#736ced" />
+      </TouchableOpacity>
+      <Image 
+            source={images.logo}
+            className="w-[115px] h-[100px] mt-7"
+            resizeMode='contain'
+            />
+    </View>
+    <View className='h-full w-full mt-2'>
+      <ScrollView>
       <Text style={styles.label}>Rental Name</Text>
       <TextInput
         style={styles.input}
@@ -102,11 +119,16 @@ export default function AddRental() {
         placeholder="Enter rental type"
         />
 
-      <TouchableOpacity style={styles.addButton} onPress={addNewRental}>
-        <Text style={styles.addButtonText}>Add Rental</Text>
-      </TouchableOpacity>
+      <View className='justify-center items-center'>
+        <CustomButton 
+          handlePress={addNewRental}
+          title={"ENREGISTRER"}
+          containerStyles={"w-3/4"}
+          />
+      </View>
+          </ScrollView>
     </View>
-</SafeAreaView>
+    </View>
   );
 }
 
