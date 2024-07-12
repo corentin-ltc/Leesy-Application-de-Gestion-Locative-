@@ -26,7 +26,7 @@ export default function GlobalSummaryChart({ rentalId }) {
       try {
         if (chartPeriod === Period.year) {
           const { startDate, endDate } = getYearRange(currentDate);
-          const data = await fetchMonthlyData(startDate, endDate, transactionType, rentalId);
+          const data = await fetchMonthlyData(startDate, endDate, transactionType);
           setChartData(processMonthlyData(data, transactionType));
           setChartKey((prev) => prev + 1);
         }
@@ -35,7 +35,7 @@ export default function GlobalSummaryChart({ rentalId }) {
       }
     };
     fetchData();
-  }, [chartPeriod, currentDate, transactionType, rentalId]);
+  }, [chartPeriod, currentDate, transactionType]);
 
   React.useEffect(() => {
     setTransactionType(selectedOptions === 'Revenus' ? 'Income' : 'Expense');
@@ -53,7 +53,7 @@ export default function GlobalSummaryChart({ rentalId }) {
         ORDER BY month ASC
       `;
 
-      const result = await db.getAllAsync(query, [startDate, endDate, type, rentalId]);
+      const result = await db.getAllAsync(query, [startDate, endDate, type]);
 
       return result;
     } catch (e) {
@@ -109,6 +109,7 @@ export default function GlobalSummaryChart({ rentalId }) {
   const maxDigits = getNumberOfDigits(maxValue);
   const modifiedMaxValue = incrementFirstCharacterAndZeroOut(maxValue);
   const stepValue = parseInt(modifiedMaxValue) / 4;
+  const yAxisLabelWidth = maxDigits >= 5 ? 50 : 35;
 
   const totalAmount = chartData.reduce((total, item) => total + item.value, 0);
   const chartYear = currentDate.getFullYear();
@@ -137,8 +138,8 @@ export default function GlobalSummaryChart({ rentalId }) {
           xAxisThickness={0}
           xAxisLabelTextStyle={{ color: "gray" }}
           yAxisTextStyle={{ color: "gray" }}
+          yAxisLabelWidth={yAxisLabelWidth}
           isAnimated
-          
           animationDuration={400}
           showGradient
           stepValue={stepValue}

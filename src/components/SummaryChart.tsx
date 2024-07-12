@@ -109,6 +109,7 @@ export default function SummaryChart({ rentalId }) {
   const maxDigits = getNumberOfDigits(maxValue);
   const modifiedMaxValue = incrementFirstCharacterAndZeroOut(maxValue);
   const stepValue = parseInt(modifiedMaxValue) / 4;
+  const yAxisLabelWidth = maxDigits >= 5 ? 50 : 35;
 
   const totalAmount = chartData.reduce((total, item) => total + item.value, 0);
   const chartYear = currentDate.getFullYear();
@@ -138,7 +139,7 @@ export default function SummaryChart({ rentalId }) {
           xAxisLabelTextStyle={{ color: "gray" }}
           yAxisTextStyle={{ color: "gray" }}
           isAnimated
-          
+          yAxisLabelWidth={yAxisLabelWidth}
           animationDuration={400}
           showGradient
           stepValue={stepValue}

@@ -13,10 +13,10 @@ const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 };
 
-const DétailsRoute = ({ rental }) => (
+const DétailsRoute = ({ rental, refresh }) => (
   <ScrollView>
     <View className='justify-center items-center'>
-      <SummaryChart rentalId={rental.id} />
+      <SummaryChart rentalId={rental.id} refresh={refresh} />
       <View className="mt-5" style={styles.card}>
         <Text>Nom de la location: {rental.rental_name}</Text>
         <Text>Adresse: {rental.address}</Text>
@@ -46,7 +46,6 @@ const TransactionForm = ({ onSubmit, type }) => {
 
   const handleSubmit = () => {
     const rawDate = Math.floor(date.getTime() / 1000); // Convert date to seconds
-    console.log(`Raw date in seconds: ${rawDate}`);
 
     const transaction = {
       amount: parseFloat(amount),
@@ -91,7 +90,7 @@ const TransactionForm = ({ onSubmit, type }) => {
   );
 };
 
-const TransactionsRoute = ({ rentalId, type }) => {
+const TransactionsRoute = ({ rentalId, type, onTransactionModified }) => {
   const db = useSQLiteContext();
   const [transactions, setTransactions] = useState([]);
 
@@ -105,18 +104,19 @@ const TransactionsRoute = ({ rentalId, type }) => {
   }, [fetchTransactions]);
 
   const handleAddTransaction = useCallback(async (transaction) => {
-    console.log(`Adding ${type.toLowerCase()} with raw date: ${transaction.date}`);
     await db.runAsync(
       `INSERT INTO Transactions (rental_id, amount, date, description, type) VALUES (?, ?, ?, ?, ?)`,
       [rentalId, transaction.amount, transaction.date, transaction.description, type]
     );
     fetchTransactions(); // Refresh the transactions list
-  }, [db, fetchTransactions, rentalId, type]);
+    onTransactionModified(); // Trigger the refresh for the chart
+  }, [db, fetchTransactions, rentalId, type, onTransactionModified]);
 
   const handleDeleteTransaction = useCallback(async (id) => {
     await db.runAsync(`DELETE FROM Transactions WHERE id = ?`, [id]);
     fetchTransactions(); // Refresh the transactions list
-  }, [db, fetchTransactions]);
+    onTransactionModified(); // Trigger the refresh for the chart
+  }, [db, fetchTransactions, onTransactionModified]);
 
   return (
     <View>
@@ -148,6 +148,7 @@ const RentalDetails = () => {
   ]);
   const [rental, setRental] = useState(null);
   const db = useSQLiteContext();
+  const [refresh, setRefresh] = useState(false); // State to trigger refresh
 
   const fetchRentalDetails = useCallback(async () => {
     const result = await db.getAllAsync(`SELECT * FROM Rental WHERE id = ?;`, [id]);
@@ -160,12 +161,16 @@ const RentalDetails = () => {
     fetchRentalDetails();
   }, [fetchRentalDetails]);
 
+  const handleTransactionModified = useCallback(() => {
+    setRefresh(prev => !prev); // Toggle the refresh state
+  }, []);
+
   const renderScene = useMemo(() => SceneMap({
-    details: () => <DétailsRoute rental={rental} />,
+    details: () => <DétailsRoute rental={rental} refresh={refresh} />,
     locataires: LocatairesRoute,
-    revenus: () => <TransactionsRoute rentalId={id} type="Income" />,
-    dépenses: () => <TransactionsRoute rentalId={id} type="Expense" />,
-  }), [id, rental]);
+    revenus: () => <TransactionsRoute rentalId={id} type="Income" onTransactionModified={handleTransactionModified} />,
+    dépenses: () => <TransactionsRoute rentalId={id} type="Expense" onTransactionModified={handleTransactionModified} />,
+  }), [id, rental, refresh, handleTransactionModified]);
 
   const renderTabBar = props => (
     <TabBar
