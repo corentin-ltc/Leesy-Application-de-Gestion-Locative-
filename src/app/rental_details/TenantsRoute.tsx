@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, TextInput, Button, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSQLiteContext } from 'expo-sqlite/next';
+import AddButton from '../../components/AddButton';
+import AddTenant from '../forms/AddTenant';
+import {
+    BottomSheetModal,
+    BottomSheetModalProvider,
+  } from "@gorhom/bottom-sheet";
 
 const TenantsRoute = ({ rentalId }) => {
   const db = useSQLiteContext();
@@ -13,6 +19,7 @@ const TenantsRoute = ({ rentalId }) => {
   const [rentPaymentDate, setRentPaymentDate] = useState(new Date());
   const [showMoveInDatePicker, setShowMoveInDatePicker] = useState(false);
   const [showRentPaymentDatePicker, setShowRentPaymentDatePicker] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const fetchTenants = useCallback(async () => {
     const result = await db.getAllAsync(`SELECT * FROM Tenant WHERE rental_id = ?;`, [rentalId]);
@@ -52,6 +59,23 @@ const TenantsRoute = ({ rentalId }) => {
     setShowRentPaymentDatePicker(Platform.OS === 'ios');
     setRentPaymentDate(currentDate);
   };
+
+  const bottomSheetModalRef = useRef(null);
+
+  const snapPoints = ["100%"];
+
+  function handlePresentModal() {
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 100);
+  }
+
+  function handleCloseModal() {
+    bottomSheetModalRef.current?.dismiss();
+    setIsOpen(false);
+    fetchTenants();
+  }
 
   return (
     <View>
@@ -112,6 +136,17 @@ const TenantsRoute = ({ rentalId }) => {
           </View>
         )}
       />
+      <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={0}
+            snapPoints={snapPoints}
+            backgroundStyle={{ borderRadius: 50 }}
+            onDismiss={() => setIsOpen(false)}
+            >
+          
+              <AddTenant rentalId={rentalId} onClose={handleCloseModal}/>
+          </BottomSheetModal>
+          <AddButton handlePress={handlePresentModal} />
     </View>
   );
 };

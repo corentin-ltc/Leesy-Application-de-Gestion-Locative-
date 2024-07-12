@@ -49,7 +49,6 @@ export default function AddRental({ onClose }) {
 
   return (
     <View>
-
       <KeyboardAvoidingView behavior='padding'>
         <SafeAreaView>
             <TouchableOpacity className="ml-4 "onPress={onClose}>
