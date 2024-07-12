@@ -104,8 +104,9 @@ export default function Bookmark() {
             backgroundStyle={{ borderRadius: 50 }}
             onDismiss={() => setIsOpen(false)}
             >
-            <View>
+            <View className='flex h-full flex-col'>
               <AddRental onClose={handleCloseModal}/>
+              
             </View>
           </BottomSheetModal>
             <AddButton handlePress={handlePresentModal} />
