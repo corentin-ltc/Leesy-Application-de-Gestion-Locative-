@@ -14,7 +14,7 @@ export default function AddTenant({ rentalId, onClose }) {
     last_name: '',
     rent_amount: '',
     move_in_date: new Date(),
-    rent_payment_day: '', // Changed from rent_payment_date to rent_payment_day
+    rent_payment_day: '',
   });
 
   const db = useSQLiteContext();
@@ -40,22 +40,51 @@ export default function AddTenant({ rentalId, onClose }) {
     return true;
   };
 
+  const generateMonthlyIncomes = async (tenantId) => {
+    const moveInDate = new Date(newTenant.move_in_date);
+    const currentDate = new Date();
+    const rentAmount = parseFloat(newTenant.rent_amount);
+    const rentPaymentDay = parseInt(newTenant.rent_payment_day);
+
+    moveInDate.setDate(rentPaymentDay);
+
+    while (moveInDate <= currentDate) {
+      const description = `Loyer de ${newTenant.first_name} ${newTenant.last_name} du ${moveInDate.toLocaleDateString()}`;
+      await db.runAsync(
+        `INSERT INTO Transactions (rental_id, tenant_id, amount, date, description, type) VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          rentalId,
+          tenantId,
+          rentAmount,
+          Math.floor(moveInDate.getTime() / 1000), // Convert date to seconds
+          description,
+          'Income',
+        ]
+      );
+      moveInDate.setMonth(moveInDate.getMonth() + 1);
+    }
+  };
+
   async function addNewTenant() {
     if (!validateInputs()) return;
 
+    let tenantId;
     await db.withTransactionAsync(async () => {
-      await db.runAsync(
+      const result = await db.runAsync(
         `INSERT INTO Tenant (first_name, last_name, rent_amount, move_in_date, rent_payment_date, rental_id) VALUES (?, ?, ?, ?, ?, ?)`,
         [
           newTenant.first_name,
           newTenant.last_name,
           parseFloat(newTenant.rent_amount),
           newTenant.move_in_date.toISOString(),
-          newTenant.rent_payment_day, // Store only the day of the month
+          newTenant.rent_payment_day,
           rentalId,
         ]
       );
+      tenantId = result.insertId;
     });
+
+    await generateMonthlyIncomes(tenantId);
     onClose();
   }
 
