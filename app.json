@@ -29,5 +29,8 @@
   },
   "ios": {
     "usesAppleSignIn": true
+  },
+  "android": {
+    "softwareKeyboardLayoutMode": "pan"
   }
 }
