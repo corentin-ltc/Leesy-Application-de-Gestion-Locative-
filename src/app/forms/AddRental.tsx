@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Image, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, View, Text, TextInput, 
+  TouchableOpacity, StyleSheet, Platform,
+  KeyboardAvoidingView } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,7 +9,6 @@ import CustomButton from '@/components/CustomButton';
 import { images } from '../../constants'
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { VELOCITY_EPS } from 'react-native-reanimated/lib/typescript/reanimated2/animation/decay/utils';
 
 export default function AddRental({ onClose }) {
   const [newRental, setNewRental] = useState({
@@ -47,6 +48,12 @@ export default function AddRental({ onClose }) {
   }
 
   return (
+    <View>
+
+    <KeyboardAvoidingView
+    behavior='padding'
+    >
+
     <SafeAreaView>
       <View id="Logo_and_text" className='flex-row justify-between items-start'>
         <TouchableOpacity className="ml-4 absolute"onPress={onClose}>
@@ -63,7 +70,7 @@ export default function AddRental({ onClose }) {
             resizeMode='contain'
           />
       </View>
-        <ScrollView className='mx-6 flex my-auto flex-grow '>
+        <ScrollView className='mx-6 flex my-auto flex-grow mt-10'>
           <Text className='font-pregular text-xl mb-2'>Nom</Text>
           <TextInput
             style={styles.input}
@@ -126,6 +133,8 @@ export default function AddRental({ onClose }) {
             </View>          
 
         </ScrollView>
+    </SafeAreaView>
+  </KeyboardAvoidingView>
           <View className='justify-center w-full items-center mt-10'>
           <CustomButton 
               handlePress={addNewRental}
@@ -133,7 +142,8 @@ export default function AddRental({ onClose }) {
               containerStyles={"w-3/4"}
             />
           </View>
-    </SafeAreaView>
+          </View>
+
   );
 }
 

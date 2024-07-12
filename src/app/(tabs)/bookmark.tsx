@@ -1,6 +1,6 @@
 import PropertyCard from '../../components/PropertyCard';
 import AddButton from '../../components/AddButton';
-import { StyleSheet, Text, View, ScrollView, useWindowDimensions, } from "react-native";
+import { StyleSheet, Text, View, ScrollView, useWindowDimensions, KeyboardAvoidingView, } from "react-native";
 import { useSQLiteContext } from 'expo-sqlite/next';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -10,6 +10,7 @@ import {
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import AddRental from '../forms/AddRental';
+
 
 export default function Bookmark() {
   const [rental, setRental] = useState([]);
@@ -104,10 +105,9 @@ export default function Bookmark() {
             backgroundStyle={{ borderRadius: 50 }}
             onDismiss={() => setIsOpen(false)}
             >
-            <View className='flex h-full flex-col'>
+          
               <AddRental onClose={handleCloseModal}/>
               
-            </View>
           </BottomSheetModal>
             <AddButton handlePress={handlePresentModal} />
     </View>
