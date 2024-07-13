@@ -58,23 +58,29 @@ const TenantCard: React.FC<TenantCardProps> = ({
       </Text>
       <View id="Données" className='mt-4 justify-between flex-col'>
         <Text style={ styles.text }>
-          Téléphone: <Text className="">{tenant.phone_number}</Text>
+          Téléphone:
         </Text>
+        <Text style={styles.textData}>{tenant.phone_number}</Text>
         <Text style={ styles.text }>
-          Email: <Text className="">{tenant.email_address}</Text>
+          Email:
         </Text>
+        <Text style={styles.textData}>{tenant.email_address}</Text>
         <Text style={ styles.text }>
-          Loyer: <Text className="text-green-600">{tenant.rent_amount}€</Text>
+          Loyer: 
         </Text>
+        <Text className="text-green-600">{tenant.rent_amount}€</Text>
         <Text style={ styles.text }>
-          Charges: <Text className="">{tenant.charges}€</Text>
+          Charges: 
         </Text>
+        <Text style={styles.textData}>{tenant.charges}€</Text>
         <Text style={ styles.text }>
-          Dépôt de garantie: <Text className="">{tenant.security_deposit}€</Text>
+          Dépôt de garantie:
         </Text>
+        <Text style={styles.textData}>{tenant.security_deposit}€</Text>
         <Text style={ styles.text }>
-          Informations supplémentaires: <Text className="">{tenant.additional_info}</Text>
+          Informations supplémentaires:
         </Text>
+        <Text style={styles.textData}>{tenant.additional_info}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -82,7 +88,6 @@ const TenantCard: React.FC<TenantCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    height: 400,
     width: '100%',
     borderColor: '#000',
     marginBottom: '6.5%',
@@ -102,8 +107,11 @@ const styles = StyleSheet.create({
     right: 15,
   },
   text: {
+    fontFamily: 'Poppins-Medium',
+    marginTop: 10,
+  },
+  textData: {
     fontFamily: 'Poppins-Regular',
-    marginTop: 16,
   }
 });
 
