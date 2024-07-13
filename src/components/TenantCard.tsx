@@ -1,7 +1,8 @@
-import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet, Alert } from 'react-native';
-import { Tenant } from '../app/types'; // Assuming you have a Tenant type defined
-import { Link } from 'expo-router';
+import * as React from 'react';
+import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { Tenant } from '../app/types';
+import { useRouter } from 'expo-router';
+import Svg, { Path } from "react-native-svg";
 
 interface TenantCardProps {
   tenant: Tenant;
@@ -15,75 +16,73 @@ interface TenantCardProps {
 const TenantCard: React.FC<TenantCardProps> = ({
   tenant,
   deleteTenant,
-  handlePress,
   containerStyles,
   textStyles,
   isLoading,
 }) => {
-
-  const handleLongPress = () => {
-    Alert.alert(
-      'Supprimer le locataire',
-      `Etes-vous certain de vouloir supprimer ${tenant.first_name} ${tenant.last_name} ?`,
-      [
-        {
-          text: 'Annuler',
-          style: 'cancel',
-        },
-        {
-          text: 'Supprimer',
-          onPress: () => deleteTenant(tenant.id),
-        },
-      ],
-      { cancelable: false }
-    );
-  };
+  const router = useRouter();
 
   return (
     <TouchableOpacity
       key={tenant.id}
-      onPress={() => handlePress()}
-      onLongPress={handleLongPress}
-      activeOpacity={0.5}
-      className={`rounded-xl min-h-[62px] mt-6
-        ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
-      style={styles.card}
-      disabled={isLoading}
+      activeOpacity={1}
+      className={'rounded-xl min-h-[62px] mt-6'} 
+      style={[styles.card, containerStyles]}
     >
-      <View className="items-center">
-        <Text className={`${textStyles} font-pmedium text-base w-48 text-center`}>
-          {tenant.first_name} {tenant.last_name}
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => router.push({
+          pathname: '../forms/EditTenant',
+          params: { tenant: JSON.stringify(tenant), tenantId: tenant.id }
+        })}
+      >
+        <Svg
+          xmlns="http://www.w3.org/2000/svg"
+          x="0px"
+          y="0px"
+          width="30px"
+          height="30px"
+          viewBox="0 0 438.536 438.536"
+          xmlSpace="preserve"
+          enableBackground="new 0 0 438.536 438.536"
+          fill={"#736ced"}
+        >
+          <Path d="M414.41 24.123C398.333 8.042 378.963 0 356.315 0H82.228C59.58 0 40.21 8.042 24.126 24.123 8.045 40.207.003 59.576.003 82.225v274.084c0 22.647 8.042 42.018 24.123 58.102 16.084 16.084 35.454 24.126 58.102 24.126h274.084c22.648 0 42.018-8.042 58.095-24.126 16.084-16.084 24.126-35.454 24.126-58.102V82.225c-.001-22.649-8.043-42.021-24.123-58.102zM155.316 365.445H73.089v-82.228l155.316-155.311 82.221 82.224-155.31 155.315zm199.853-199.853l-26.262 26.269-82.228-82.229 26.262-26.265c5.331-5.325 11.8-7.993 19.417-7.993 7.611 0 14.086 2.664 19.41 7.993l43.4 43.398c5.324 5.327 7.994 11.798 7.994 19.414.001 7.613-2.661 14.083-7.993 19.413z" />
+          <Path d="M100.502 294.642L100.502 310.623 127.91 310.623 127.91 338.038 143.896 338.038 158.744 323.189 115.347 279.789z" />
+          <Path d="M141.901 252.385c-3.237 3.23-3.521 6.084-.859 8.562 2.474 2.67 5.33 2.382 8.566-.855l83.081-83.083c3.237-3.23 3.519-6.086.855-8.561-2.478-2.667-5.328-2.383-8.562.855l-83.081 83.082z" />
+        </Svg>
+      </TouchableOpacity>
+
+      <Text className={`${textStyles} font-psemibold text-lg w-48`}>
+        {tenant.first_name} {tenant.last_name}
+      </Text>
+      <View id="Données" className='mt-4 justify-between flex-col'>
+        <Text style={ styles.text }>
+          Téléphone: <Text className="">{tenant.phone_number}</Text>
         </Text>
-        <View className="w-3/4 mt-2 items-center bg-gray-400" style={{ height: 1 }}></View>
+        <Text style={ styles.text }>
+          Email: <Text className="">{tenant.email_address}</Text>
+        </Text>
+        <Text style={ styles.text }>
+          Loyer: <Text className="text-green-600">{tenant.rent_amount}€</Text>
+        </Text>
+        <Text style={ styles.text }>
+          Charges: <Text className="">{tenant.charges}€</Text>
+        </Text>
+        <Text style={ styles.text }>
+          Dépôt de garantie: <Text className="">{tenant.security_deposit}€</Text>
+        </Text>
+        <Text style={ styles.text }>
+          Informations supplémentaires: <Text className="">{tenant.additional_info}</Text>
+        </Text>
       </View>
-      <Text className="font-pregular">
-        Téléphone: <Text className="text-green-600">{tenant.phone_number}</Text>
-      </Text>
-      <Text className="font-pregular">
-        Email: <Text className="text-green-600">{tenant.email_address}</Text>
-      </Text>
-      <Text className="font-pregular">
-        Loyer: <Text className="text-green-600">{tenant.rent_amount}€</Text>
-      </Text>
-      <Text className="font-pregular">
-        Charges: <Text className="text-green-600">{tenant.charges}€</Text>
-      </Text>
-      <Text className="font-pregular">
-        Dépôt de garantie: <Text className="text-green-600">{tenant.security_deposit}€</Text>
-      </Text>
-      <Text className="font-pregular">
-        Informations: <Text className="text-green-600">{tenant.additional_info}</Text>
-      </Text>
-      <Text className="font-pregular">
-        Ville: {tenant.city}
-      </Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    height: 230,
+    height: 400,
     width: '100%',
     borderColor: '#000',
     marginBottom: '6.5%',
@@ -95,7 +94,17 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { height: 6, width: 0 },
     shadowOpacity: 0.15,
+    position: 'relative',
   },
+  iconContainer: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+  },
+  text: {
+    fontFamily: 'Poppins-Regular',
+    marginTop: 16,
+  }
 });
 
 export default TenantCard;

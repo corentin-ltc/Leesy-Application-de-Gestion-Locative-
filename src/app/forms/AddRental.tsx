@@ -66,7 +66,7 @@ export default function AddRental({ onClose }) {
               resizeMode='contain'
             />
           </View>
-          <ScrollView className='mx-6 flex my-auto flex-grow mt-5'>
+          <ScrollView className='ml-6 mr-6 flex my-auto flex-grow mt-5'>
             <Text className='font-pregular text-xl mb-2'>Nom</Text>
             <TextInput
               style={styles.input}

@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite/next';
+import { useFocusEffect } from '@react-navigation/native';
 import AddButton from '../../components/AddButton';
 import AddTenant from '../forms/AddTenant';
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import TenantCard from '@/components/TenantCard';
 
 const TenantsRoute = ({ rentalId }) => {
@@ -19,9 +17,11 @@ const TenantsRoute = ({ rentalId }) => {
     setTenants(result);
   }, [db, rentalId]);
 
-  useEffect(() => {
-    fetchTenants();
-  }, [fetchTenants]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchTenants();
+    }, [fetchTenants])
+  );
 
   const handleDeleteTenant = useCallback(async (id) => {
     await db.runAsync(`DELETE FROM Tenant WHERE id = ?`, [id]);
@@ -46,34 +46,30 @@ const TenantsRoute = ({ rentalId }) => {
   }
 
   return (
-      <View className='h-full'>
-      <View>
-        <ScrollView>
-          <View style={styles.container}>
-            {tenants.map((tenant) => (
-              <TenantCard
-                key={tenant.id}
-                tenant={tenant}
-                deleteTenant={handleDeleteTenant}
-                handlePress={() => {}} // Add functionality as needed
-              />
-            ))}
-          </View>
-        </ScrollView>
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          index={0}
-          snapPoints={snapPoints}
-          backgroundStyle={{ borderRadius: 50 }}
-          onDismiss={() => setIsOpen(false)}
-        >
-          <AddTenant rentalId={rentalId} onClose={handleCloseModal} />
-        </BottomSheetModal>
-      </View>
-      <View >
-        <AddButton handlePress={handlePresentModal} />
-      </View>
-      </View>
+    <View style={{ flex: 1 }}>
+      <ScrollView>
+        <View style={styles.container}>
+          {tenants.map((tenant) => (
+            <TenantCard
+              key={tenant.id}
+              tenant={tenant}
+              deleteTenant={handleDeleteTenant}
+              handlePress={() => {}}
+            />
+          ))}
+        </View>
+      </ScrollView>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        backgroundStyle={{ borderRadius: 50 }}
+        onDismiss={() => setIsOpen(false)}
+      >
+        <AddTenant rentalId={rentalId} onClose={handleCloseModal} />
+      </BottomSheetModal>
+      <AddButton handlePress={handlePresentModal} />
+    </View>
   );
 };
 
