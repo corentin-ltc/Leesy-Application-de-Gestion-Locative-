@@ -50,7 +50,7 @@ const InitialLayout = ({ children }) => {
       router.replace('/');
     } else if (!session && !inAuthGroup) {
       // Redirect unauthenticated users to the login page
-      router.replace('./forms/Welcome');
+      router.push('../forms/Welcome');
       console.log("you are not logged");
     }
   }, [session, initialized]);
