@@ -11,7 +11,8 @@ const index = () => {
         title="Tabs"
         handlePress={() => router.push('../home')}
         containerStyles="w-10/12 mt-7"
-      /><CustomButton  
+      />
+      <CustomButton  
       title="Se connecter"
       handlePress={() => router.push('../sign-in')}
       containerStyles="w-10/12 mt-7"

@@ -4,10 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../provider/AuthProvider';
 import * as FileSystem from 'expo-file-system';
-import { decode } from 'base64-arraybuffer';
 import { supabase } from '../../config/initSupabase';
 import { FileObject } from '@supabase/storage-js';
-import ImageItem from '@/components/ImageItem';
+import ImageItem from './ImageItem';
 
 const list = () => {
   const { user } = useAuth();
@@ -30,7 +29,7 @@ const list = () => {
   const onSelectImage = async () => {
     const options: ImagePicker.ImagePickerOptions = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      allowsEditing: false,
     };
 
     const result = await ImagePicker.launchImageLibraryAsync(options);
@@ -39,9 +38,14 @@ const list = () => {
     if (!result.canceled) {
       const img = result.assets[0];
       const base64 = await FileSystem.readAsStringAsync(img.uri, { encoding: 'base64' });
+      const binary = atob(base64);
+      const arrayBuffer = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        arrayBuffer[i] = binary.charCodeAt(i);
+      }
       const filePath = `${user!.id}/${new Date().getTime()}.${img.type === 'image' ? 'png' : 'mp4'}`;
       const contentType = img.type === 'image' ? 'image/png' : 'video/mp4';
-      await supabase.storage.from('files').upload(filePath, decode(base64), { contentType });
+      await supabase.storage.from('files').upload(filePath, arrayBuffer, { contentType });
       loadImages();
     }
   };
@@ -73,7 +77,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#151515',
+    backgroundColor: '#ffffff',
   },
   fab: {
     borderWidth: 1,

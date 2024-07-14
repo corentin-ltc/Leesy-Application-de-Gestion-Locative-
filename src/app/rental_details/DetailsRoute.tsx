@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import SummaryChart from '@/components/SummaryChart';
+import Files from '@/components/Files'
 
 const DétailsRoute = ({ rental, refresh }) => (
   <ScrollView>
@@ -13,6 +14,9 @@ const DétailsRoute = ({ rental, refresh }) => (
         <Text>Description: {rental.description}</Text>
       </View>
     </View>
+    <Files>
+
+    </Files>
   </ScrollView>
 );
 
