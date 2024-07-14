@@ -2,11 +2,11 @@ import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from '../../provider/AuthProvider';
+import { useAuth } from '../../../provider/AuthProvider';
 import * as FileSystem from 'expo-file-system';
-import { supabase } from '../../config/initSupabase';
+import { supabase } from '../../../config/initSupabase';
 import { FileObject } from '@supabase/storage-js';
-import ImageItem from './ImageItem';
+import ImageItem from '../../components/ImageItem';
 
 const list = () => {
   const { user } = useAuth();
@@ -51,7 +51,7 @@ const list = () => {
   };
 
   const onRemoveImage = async (item: FileObject, listIndex: number) => {
-    supabase.storage.from('files').remove([`${user!.id}/${item.name}`]);
+    await supabase.storage.from('files').remove([`${user!.id}/${item.name}`]);
     const newFiles = [...files];
     newFiles.splice(listIndex, 1);
     setFiles(newFiles);

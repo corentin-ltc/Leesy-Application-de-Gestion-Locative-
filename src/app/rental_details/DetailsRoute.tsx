@@ -1,7 +1,9 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import SummaryChart from '@/components/SummaryChart';
-import Files from '@/components/Files'
+import { router} from 'expo-router';
+import CustomButton from '@/components/CustomButton';
+import Files from './Files'
 
 const DétailsRoute = ({ rental, refresh }) => (
   <ScrollView>
@@ -13,10 +15,12 @@ const DétailsRoute = ({ rental, refresh }) => (
         <Text>Prix: {rental.price}</Text>
         <Text>Description: {rental.description}</Text>
       </View>
+      <CustomButton
+        title="Voir les documents"
+        handlePress={() => router.push('./Files')}
+        containerStyles="w-10/12 mt-7"
+      />
     </View>
-    <Files>
-
-    </Files>
   </ScrollView>
 );
 
