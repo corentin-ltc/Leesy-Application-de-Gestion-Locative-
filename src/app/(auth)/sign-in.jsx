@@ -1,70 +1,86 @@
-import { Image, View, Text, ScrollView } from 'react-native'
-import React, { useState} from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { images } from '../../constants'
-import "../../global.css"
-import FormField from '../../components/FormField'
-import CustomButton from '../../components/CustomButton'
-import { Link } from 'expo-router'
+import { Alert, View, Button, TextInput, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import React from 'react';
+import { supabase } from '../../../config/initSupabase';
 
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-const SignIn = () => {
-  const [form, setForm] = useState({
-    email:'',
-    password:'',
-  })
-  const [isSubmitting, setisSubmitting] = useState(false)
-  
-  const submit = () => {
+  // Sign in with email and password
+  const onSignInPress = async () => {
+    setLoading(true);
 
-  }
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) Alert.alert(error.message);
+    setLoading(false);
+  };
+
+  // Create a new user
+  const onSignUpPress = async () => {
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+
+    if (error) Alert.alert(error.message);
+    setLoading(false);
+  };
 
   return (
-    <SafeAreaView style = {{ backgroundColor: '#2c2e2e' }}>
-     <ScrollView contentContainerStyle={{ height: '100%'}}>
-        <View className="w-full min-h-[85vh] px-4 my-6 h-full">
-          <Image 
-            source={images.logo}
-            className="w-[115px] h-[100px] mt-7"
-            resizeMode='contain'
-          />
-          <Text className="text-2xl text-semibold mt-10 font-psemibold" 
-          style={{ color:'white'}}>Accéder à son profil</Text>
+    <View style={styles.container}>
+      <ActivityIndicator 
+      animating={loading} />
 
-          <FormField 
-            title="Adresse e-mail"
-            value={form.email}
-            handleChangeText={(e) => setForm({ ...form, 
-            email: e})}
-            otherStyles="mt-7"
-            keyboardType="email-address"
-          />
-          <FormField 
-            title="Mot de passe"
-            value={form.password}
-            handleChangeText={(e) => setForm({ ...form, 
-            password: e})}
-            otherStyles="mt-7"
-          />
+      <Text style={styles.header}>My Cloud</Text>
 
-          <CustomButton 
-          title="Se connecter"
-          handlePress={submit}
-          containerStyles="mt-7"
-          isLoading={isSubmitting}
-          />
-          <View className="justify-center pt-5 flex-row gap-2">
-            <Text className="text-lg text-gray-100 font-pregular">
-              Pas de compte ?
-            </Text>
-            <Link href="/sign-up" className= " text-lg text-secondary font-psemibold">
-            S'inscrire
-            </Link>
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
-}
+      <TextInput autoCapitalize="none" placeholder="john@doe.com" value={email} onChangeText={setEmail} style={styles.inputField} />
+      <TextInput placeholder="password" value={password} onChangeText={setPassword} secureTextEntry style={styles.inputField} />
 
-export default SignIn
+      <TouchableOpacity onPress={onSignInPress} style={styles.button}>
+        <Text style={{ color: '#fff' }}>Sign in</Text>
+      </TouchableOpacity>
+      <Button onPress={onSignUpPress} title="Create Account" color={'#fff'}></Button>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 200,
+    padding: 20,
+    backgroundColor: '#151515',
+  },
+  header: {
+    fontSize: 30,
+    textAlign: 'center',
+    margin: 50,
+    color: '#fff',
+  },
+  inputField: {
+    marginVertical: 4,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#2b825b',
+    borderRadius: 4,
+    padding: 10,
+    color: '#fff',
+    backgroundColor: '#363636',
+  },
+  button: {
+    marginVertical: 15,
+    alignItems: 'center',
+    backgroundColor: '#2b825b',
+    padding: 12,
+    borderRadius: 4,
+  },
+});
+
+export default Login;

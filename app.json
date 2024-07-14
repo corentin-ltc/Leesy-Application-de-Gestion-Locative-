@@ -22,7 +22,8 @@
         }
       ],
       "expo-apple-authentication",
-      "expo-asset"
+      "expo-asset",
+      "expo-secure-store"
     ],
     "name": "Leesy",
     "slug": "leesy"

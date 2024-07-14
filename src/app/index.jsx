@@ -8,10 +8,14 @@ const index = () => {
   return (
     <View>
    <CustomButton  
-        title="Se connecter"
+        title="Tabs"
         handlePress={() => router.push('../home')}
         containerStyles="w-10/12 mt-7"
-      />
+      /><CustomButton  
+      title="Se connecter"
+      handlePress={() => router.push('../sign-in')}
+      containerStyles="w-10/12 mt-7"
+    />
     </View>
   )
 }
