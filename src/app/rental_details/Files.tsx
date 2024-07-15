@@ -8,22 +8,25 @@ import * as FileSystem from 'expo-file-system';
 import { supabase } from '../../../config/initSupabase';
 import { FileObject } from '@supabase/storage-js';
 import ImageItem from '../../components/ImageItem';
+import { useRouter, useGlobalSearchParams } from 'expo-router';
 
-const list = () => {
+const Files = () => {
   const { user } = useAuth();
+  const { rentalId } = useGlobalSearchParams();
   const [files, setFiles] = useState<FileObject[]>([]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !rentalId) return;
 
-    // Load user images
+    // Load rental images
     loadImages();
-  }, [user]);
+  }, [user, rentalId]);
 
   const loadImages = async () => {
     const { data } = await supabase.storage.from('files').list(user!.id);
     if (data) {
-      setFiles(data);
+      const rentalFiles = data.filter(file => file.name.includes(`rental_${rentalId}_`));
+      setFiles(rentalFiles);
     }
   };
 
@@ -89,7 +92,7 @@ const list = () => {
         for (let i = 0; i < binary.length; i++) {
           arrayBuffer[i] = binary.charCodeAt(i);
         }
-        const filePath = `${user!.id}/${new Date().getTime()}.png`;
+        const filePath = `${user!.id}/rental_${rentalId}_${new Date().getTime()}.png`;
         const { error } = await supabase.storage.from('files').upload(filePath, arrayBuffer, { contentType: 'image/png' });
         if (error) throw error;
         loadImages();
@@ -109,7 +112,7 @@ const list = () => {
         for (let i = 0; i < binary.length; i++) {
           arrayBuffer[i] = binary.charCodeAt(i);
         }
-        const filePath = `${user!.id}/${new Date().getTime()}_${file.name}`;
+        const filePath = `${user!.id}/rental_${rentalId}_${new Date().getTime()}_${file.name}`;
         const { error } = await supabase.storage.from('files').upload(filePath, arrayBuffer, { contentType: file.mimeType });
         if (error) throw error;
         loadImages();
@@ -167,4 +170,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default list;
+export default Files;
