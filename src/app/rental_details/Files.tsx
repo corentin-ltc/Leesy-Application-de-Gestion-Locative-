@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Text } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -14,6 +14,8 @@ const Files = () => {
   const { user } = useAuth();
   const { rentalId } = useGlobalSearchParams();
   const [files, setFiles] = useState<FileObject[]>([]);
+  const [loading, setLoading] = useState(false);
+  console.log(rentalId);
 
   useEffect(() => {
     if (!user || !rentalId) return;
@@ -68,8 +70,7 @@ const Files = () => {
         {
           text: 'Documents',
           onPress: async () => {
-            const result = await DocumentPicker.getDocumentAsync({
-            });
+            const result = await DocumentPicker.getDocumentAsync({});
             handleDocumentResult(result);
           },
         },
@@ -84,6 +85,7 @@ const Files = () => {
 
   const handleImageResult = async (result) => {
     if (!result.canceled) {
+      setLoading(true);
       try {
         const img = result.assets[0];
         const base64 = await FileSystem.readAsStringAsync(img.uri, { encoding: 'base64' });
@@ -98,12 +100,15 @@ const Files = () => {
         loadImages();
       } catch (error) {
         console.error('Error uploading image: ', error);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   const handleDocumentResult = async (result) => {
     if (!result.canceled) {
+      setLoading(true);
       try {
         const file = result.assets[0];
         const base64 = await FileSystem.readAsStringAsync(file.uri, { encoding: 'base64' });
@@ -118,6 +123,8 @@ const Files = () => {
         loadImages();
       } catch (error) {
         console.error('Error uploading document: ', error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -136,7 +143,9 @@ const Files = () => {
 
   return (
     <View style={styles.container}>
+      {loading && <ActivityIndicator size="large" color="#2b825b" />}
       <ScrollView>
+        {files.length === 0 && !loading && <Text>No file uploaded</Text>}
         {files.map((item, index) => (
           <ImageItem key={item.id} item={item} userId={user!.id} onRemoveImage={() => onRemoveImage(item, index)} />
         ))}
