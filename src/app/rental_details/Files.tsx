@@ -66,7 +66,6 @@ const list = () => {
           text: 'Documents',
           onPress: async () => {
             const result = await DocumentPicker.getDocumentAsync({
-              type: '*/*',
             });
             handleDocumentResult(result);
           },
@@ -101,15 +100,17 @@ const list = () => {
   };
 
   const handleDocumentResult = async (result) => {
-    if (result.type === 'success') {
+    if (!result.canceled) {
       try {
-        const fileUri = result.uri;
-        const fileType = result.mimeType;
-        const fileName = result.name;
-        const fileBuffer = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
-        const arrayBuffer = Uint8Array.from(atob(fileBuffer), c => c.charCodeAt(0));
-        const filePath = `${user!.id}/${new Date().getTime()}_${fileName}`;
-        const { error } = await supabase.storage.from('files').upload(filePath, arrayBuffer, { contentType: fileType });
+        const file = result.assets[0];
+        const base64 = await FileSystem.readAsStringAsync(file.uri, { encoding: 'base64' });
+        const binary = atob(base64);
+        const arrayBuffer = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          arrayBuffer[i] = binary.charCodeAt(i);
+        }
+        const filePath = `${user!.id}/${new Date().getTime()}_${file.name}`;
+        const { error } = await supabase.storage.from('files').upload(filePath, arrayBuffer, { contentType: file.mimeType });
         if (error) throw error;
         loadImages();
       } catch (error) {
