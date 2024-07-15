@@ -15,7 +15,6 @@ const Files = () => {
   const { rentalId } = useGlobalSearchParams();
   const [files, setFiles] = useState<FileObject[]>([]);
   const [loading, setLoading] = useState(false);
-  console.log(rentalId);
 
   useEffect(() => {
     if (!user || !rentalId) return;
