@@ -54,7 +54,7 @@ const DétailsRoute = ({ rental, refresh }) => {
             </Svg>
           </TouchableOpacity>
 
-          <View className='flex-row items-center ml-1 mt-8'>
+          <View className='flex-row items-center ml-1'>
             <AddressIcon/>
             <View className='ml-4 flex-col'>
               <Text>{rental.rental_street}</Text>

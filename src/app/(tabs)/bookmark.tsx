@@ -23,7 +23,12 @@ export default function Bookmark() {
   );
 
   async function getData() {
-    const result = await db.getAllAsync('SELECT * FROM Rental;');
+    const result = await db.getAllAsync(`
+      SELECT r.*, 
+        IFNULL((SELECT SUM(t.rent_amount) FROM Tenant t WHERE t.rental_id = r.id), 0) as totalRent,
+        (SELECT COUNT(*) FROM Tenant t WHERE t.rental_id = r.id) as numberOfTenants
+      FROM Rental r;
+    `);
     setRentals(result);
   }
 
@@ -61,11 +66,13 @@ export default function Bookmark() {
           <View className="w-full h-16 bg-primary items-center justify-center">
             <Text className="font-psemibold text-3xl text-white">Vos biens</Text>
           </View>
-          <View className="flex-row flex-wrap">
+          <View className="flex-row flex-wrap mt-6">
             {rentals.map((rental) => (
               <PropertyCard 
                 key={rental.id}
                 rental={rental}
+                totalRent={rental.totalRent}  // Pass totalRent prop
+                numberOfTenants={rental.numberOfTenants}  // Pass numberOfTenants prop
                 deleteRental={deleteRental}
                 handlePress={() => router.push(`./../rental_details/${rental.id}`)}
               />

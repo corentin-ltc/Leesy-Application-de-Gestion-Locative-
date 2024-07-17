@@ -171,7 +171,7 @@ const RootLayout = () => {
                       borderBottomWidth: 0,
                     },
                     headerTitle: () => (
-                      <View></View>
+                      <Text></Text>
                     ),
                     headerRight: () => (
                       <View className="flex-row items-center">
