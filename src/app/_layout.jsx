@@ -47,10 +47,10 @@ const InitialLayout = ({ children }) => {
     if (session && inAuthGroup) {
       // Redirect authenticated users to the main page
       console.log("you are logged");
-      router.replace('/');
+      router.replace('/home');
     } else if (!session && !inAuthGroup) {
       // Redirect unauthenticated users to the login page
-      router.push('../forms/Welcome');
+      router.push('./index');
       console.log("you are not logged");
     }
   }, [session, initialized]);
