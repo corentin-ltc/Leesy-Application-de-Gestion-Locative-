@@ -32,8 +32,6 @@ export default function AddRental({ onClose, onSave }) {
         [newRental.user_name]
       );
 
-      console.log('User updated:', { user_name: newRental.user_name, firstTimeConnection: false });
-
       // Now create rental
       await db.withTransactionAsync(async () => {
         await db.runAsync(

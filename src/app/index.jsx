@@ -26,7 +26,6 @@ export default function Welcome() {
       try {
         const data = await db.getAllAsync('SELECT firstTimeConnection FROM User');
         const result = data[0]?.firstTimeConnection;
-        console.log(result);
           if (result === 0) {
             setUserExists(true);
             router.replace('/home');
