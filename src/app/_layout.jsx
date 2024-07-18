@@ -8,7 +8,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
-import { SQLiteProvider } from 'expo-sqlite/next';
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite/next';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,34 +32,71 @@ const loadDataBase = async () => {
   }
 };
 
-const InitialLayout = ({ children }) => {
+const checkUserExists = async (db) => {
+  try {
+    const result = await db.getAllAsync('SELECT COUNT(*) AS count FROM User WHERE USER_ID = 1;');
+    return result.rows._array[0].count > 0;
+  } catch (error) {
+    console.error('Error checking user existence:', error);
+    return false;
+  }
+};
+
+const fetchUsername = async (db, setUsername) => {
+  try {
+    const result = await db.getAllAsync('SELECT USERNAME FROM User WHERE USER_ID = 1;');
+    if (result.rows.length > 0) {
+      setUsername(result.rows._array[0].USERNAME);
+    } else {
+      setUsername('Leeser');
+    }
+  } catch (error) {
+    console.error('Error fetching username:', error);
+    setUsername('Leeser');
+  }
+};
+
+const InitialLayout = ({ children, setUsername }) => {
   const { session, initialized } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const db = useSQLiteContext();
 
   useEffect(() => {
-
     if (!initialized) return;
 
-    // Check if the path/url is in the (auth) group
     const inAuthGroup = segments[0] === '(auth)';
 
     if (session && inAuthGroup) {
-      // Redirect authenticated users to the main page
       console.log("you are logged");
       router.replace('/home');
     } else if (!session && !inAuthGroup) {
-      // Redirect unauthenticated users to the login page
-      router.push('./index');
       console.log("you are not logged");
     }
   }, [session, initialized]);
+
+  useEffect(() => {
+    const initializeUser = async () => {
+      const userExists = await checkUserExists(db);
+      if (userExists) {
+        await fetchUsername(db, setUsername);
+      } else {
+        console.log('User does not exist yet');
+        setUsername('Leeser');
+      }
+    };
+
+    if (session) {
+      initializeUser();
+    }
+  }, [session]);
 
   return children;
 };
 
 const RootLayout = () => {
   const [dbLoaded, setDbLoaded] = useState(false);
+  const [username, setUsername] = useState('Leeser');
 
   useEffect(() => {
     const initDb = async () => {
@@ -114,7 +151,7 @@ const RootLayout = () => {
       <SQLiteProvider databaseName="SQLiteDB.db">
         <GestureHandlerRootView style={{ flex: 1 }}>
           <BottomSheetModalProvider>
-            <InitialLayout>
+            <InitialLayout setUsername={setUsername}>
               <Stack className="bg-secondary" screenOptions={{ headerShadowVisible: false }}>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="forms/AddRental" options={{ headerShown: false }} />
@@ -176,7 +213,7 @@ const RootLayout = () => {
                     headerRight: () => (
                       <View className="flex-row items-center">
                         <Text className="font-psemibold text-gray mr-2">
-                          Corentin
+                          {username}
                         </Text>
                         <View className="mb-1">
                           <Svg

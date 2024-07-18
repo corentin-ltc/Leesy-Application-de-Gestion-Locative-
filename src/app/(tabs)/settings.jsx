@@ -1,12 +1,35 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import React from 'react';
-import { Stack } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../../../provider/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
+import { useSQLiteContext } from 'expo-sqlite/next';
 
 const Settings = () => {
   const { signOut } = useAuth();
-  
+  const router = useRouter();
+  const db = useSQLiteContext();
+
+  const deleteAllData = async () => {
+    try {
+      await db.withTransactionAsync(async () => {
+        await db.runAsync('DELETE FROM Transactions;');
+        await db.runAsync('DELETE FROM Tenant;');
+        await db.runAsync('DELETE FROM User;');
+        await db.runAsync('DELETE FROM Rental;');
+      });
+      console.log('All data deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting data:', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await deleteAllData();
+    signOut();
+    router.replace('/');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Settings</Text>
@@ -39,7 +62,7 @@ const Settings = () => {
         <Text style={styles.itemText}>Conditions générales</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity style={styles.item} onPress={signOut}>
+      <TouchableOpacity style={styles.item} onPress={handleSignOut}>
         <Text style={styles.itemText}>Se déconnecter</Text>
         <Ionicons name="log-out-outline" size={20} color={'black'} />
       </TouchableOpacity>
@@ -50,7 +73,7 @@ const Settings = () => {
       
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

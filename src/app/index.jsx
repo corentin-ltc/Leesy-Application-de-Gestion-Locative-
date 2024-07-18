@@ -36,7 +36,7 @@ export default function Welcome() {
 
   function handleSave() {
     handleCloseModal();
-    router.push('/tabs'); // Navigate to the tabs route after saving
+    router.replace('/home'); // Navigate to the tabs route after saving
   }
 
   if (userExists) {

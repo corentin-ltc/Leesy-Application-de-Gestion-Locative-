@@ -20,7 +20,6 @@ export default function AddRental({ onClose }) {
     country: '',
     surface_area: '',
     rental_type: '',
-    user_id: '', // Set dynamically based on your application logic
   });
 
   const navigation = useNavigation(); // Hook from expo-router to get navigation object
@@ -30,7 +29,7 @@ export default function AddRental({ onClose }) {
   async function addNewRental() {
     await db.withTransactionAsync(async () => {
       await db.runAsync(
-        'INSERT INTO Rental (rental_name, rental_city, rental_postal_code, rental_street, number_of_tenants, country, surface_area, rental_type, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);',
+        'INSERT INTO Rental (rental_name, rental_city, rental_postal_code, rental_street, number_of_tenants, country, surface_area, rental_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
         [
           newRental.rental_name,
           newRental.rental_city,
@@ -40,7 +39,6 @@ export default function AddRental({ onClose }) {
           newRental.country,
           newRental.surface_area,
           newRental.rental_type,
-          newRental.user_id,
         ]
       );
     });

@@ -78,7 +78,8 @@ export default function Bookmark() {
               />
             ))}
           </View>
-          <View className="bg-secondary h-52 mt-52"></View>
+          <View className="bg-secondary h-full mt-52"></View>
+          <View className="bg-secondary h-full mt-52"></View>
         </View>
       </ScrollView>
       <BottomSheetModal
