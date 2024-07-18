@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, Text, View, Image } from 'react-native';
-import { useRouter } from 'expo-router'; // Import useRouter
+import { useRouter } from 'expo-router';
 import React, { useState, useEffect, useRef } from 'react';
 import AddRentalWelcome from './forms/AddRentalWelcome';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,8 +18,26 @@ export default function Welcome() {
   const [isOpen, setIsOpen] = useState(false);
   const [userExists, setUserExists] = useState(false);
   const snapPoints = ["100%"];
-  const router = useRouter(); // Get the router object
+  const router = useRouter();
   const db = useSQLiteContext();
+
+  useEffect(() => {
+    const checkUserFirstTimeConnection = async () => {
+      try {
+        const data = await db.getAllAsync('SELECT firstTimeConnection FROM User');
+        const result = data[0]?.firstTimeConnection;
+        console.log(result);
+          if (result === 0) {
+            setUserExists(true);
+            router.replace('/home');
+          }
+        
+      } catch (error) {
+        console.error('Error checking user firstTimeConnection:', error);
+      }
+    };
+    checkUserFirstTimeConnection();
+  }, []);
 
   function handlePresentModal() {
     bottomSheetModalRef.current?.present();
@@ -28,7 +46,6 @@ export default function Welcome() {
     }, 100);
   }
 
-
   function handleCloseModal() {
     bottomSheetModalRef.current?.dismiss();
     setIsOpen(false);
@@ -36,11 +53,11 @@ export default function Welcome() {
 
   function handleSave() {
     handleCloseModal();
-    router.replace('/home'); // Navigate to the tabs route after saving
+    router.replace('/home');
   }
 
   if (userExists) {
-    return null; // Render nothing while redirecting
+    return null;
   }
 
   return (

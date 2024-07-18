@@ -24,13 +24,15 @@ export default function AddRental({ onClose, onSave }) {
 
   const db = useSQLiteContext();
 
-  async function createUserAndAddNewRental() {
+  async function updateUserAndAddNewRental() {
     try {
-      // Create user first
+      // Update user
       await db.runAsync(
-        'INSERT INTO User (USERNAME) VALUES (?);',
+        'UPDATE User SET USERNAME = ?, firstTimeConnection = 0',
         [newRental.user_name]
       );
+
+      console.log('User updated:', { user_name: newRental.user_name, firstTimeConnection: false });
 
       // Now create rental
       await db.withTransactionAsync(async () => {
@@ -53,7 +55,7 @@ export default function AddRental({ onClose, onSave }) {
       if (onSave) onSave();
 
     } catch (error) {
-      console.error('Error creating user or rental:', error);
+      console.error('Error updating user or creating rental:', error);
     }
   }
 
@@ -156,7 +158,7 @@ export default function AddRental({ onClose, onSave }) {
               </ScrollView>
               <View className='justify-center w-full items-center mt-10'>
                 <CustomButton 
-                  handlePress={createUserAndAddNewRental}
+                  handlePress={updateUserAndAddNewRental}
                   title={"ENREGISTRER"}
                   containerStyles={"w-3/4"}
                 />

@@ -17,12 +17,21 @@ const Settings = () => {
         await db.runAsync('DELETE FROM Tenant;');
         await db.runAsync('DELETE FROM User;');
         await db.runAsync('DELETE FROM Rental;');
+        
+        // Insert a new user after deletion
+        await db.runAsync('INSERT INTO User (USERNAME, firstTimeConnection) VALUES (?, ?);', ['Leesy', 1]);
       });
-      console.log('All data deleted successfully.');
+      console.log('All data deleted and new user created successfully.');
+      getData();
     } catch (error) {
-      console.error('Error deleting data:', error);
+      console.error('Error deleting data or creating user:', error);
     }
   };
+
+  async function getData() {
+    const result = await db.getAllAsync('SELECT * FROM User');
+    console.log('user data' ,result);
+  }
 
   const handleSignOut = async () => {
     await deleteAllData();
