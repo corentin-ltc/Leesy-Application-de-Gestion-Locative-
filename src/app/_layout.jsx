@@ -14,6 +14,7 @@ import { AuthProvider, useAuth } from "../../provider/AuthProvider";
 
 import UserIcon from '../assets/icons/UserIcon';
 import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
+import { UsernameProvider, useUsername } from '../utils/UserContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -35,19 +36,22 @@ const loadDataBase = async () => {
 
 const fetchUsername = async (db, setUsername) => {
   try {
-    const result = await db.getAllAsync('SELECT USERNAME FROM User ');    
-    setUsername(result[0].USERNAME);
-    console.log(result[0].USERNAME);
+    const result = await db.getAllAsync('SELECT USERNAME FROM User ');
+    if (result[0].USERNAME === "")
+      setUsername("Leeser");
+    else 
+      setUsername(result[0].USERNAME);
   } catch (error) {
     console.error('Error fetching username:', error);
   }
 };
 
-const InitialLayout = ({ children, setUsername }) => {
+const InitialLayout = ({ children }) => {
   const { session, initialized } = useAuth();
   const segments = useSegments();
   const router = useRouter();
   const db = useSQLiteContext();
+  const { setUsername } = useUsername();
 
   useEffect(() => {
     if (!initialized) return;
@@ -127,73 +131,80 @@ const RootLayout = () => {
 
   return (
     <AuthProvider>
-      <SQLiteProvider databaseName="SQLiteDB.db">
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <BottomSheetModalProvider>
-            <InitialLayout setUsername={setUsername}>
-              <Stack className="bg-secondary" screenOptions={{ headerShadowVisible: false }}>
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="forms/AddRental" options={{ headerShown: false }} />
-                <Stack.Screen name="rental_details/[id]" options={{
-                  title: '',
-                  headerRight: () => (
-                    <View className="flex-row items-center">
-                        <Text className="font-psemibold text-gray mr-2">
-                          {username}
-                        </Text>
+      <UsernameProvider>
+        <SQLiteProvider databaseName="SQLiteDB.db">
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
+              <InitialLayout>
+                <Stack className="bg-secondary" screenOptions={{ headerShadowVisible: false }}>
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen name="forms/AddRental" options={{ headerShown: false }} />
+                  <Stack.Screen name="rental_details/[id]" options={{
+                    title: '',
+                    headerRight: () => (
+                      <View className="flex-row items-center">
                         <View className="mb-1">
                           <UserIcon />
                         </View>
                       </View>
-                  ),
-                  headerLeft: () => (
-                    <TouchableOpacity onPress={useRouter().back}>
-                      <ArrowBackIcon />
-                    </TouchableOpacity>
-                  ),
-                  headerLargeTitle: false,
-                  headerTransparent: true,
-                  headerTintColor: 'white',
-                  headerStyle: {
-                    backgroundColor: '#736ced',
-                    borderBottomWidth: 0,
-                  },
-                }} />
-                <Stack.Screen name="(tabs)"
-                  options={{
-                    headerLeft: () => (
-                      <View className="ml-4 mb-3 border-0 items-center justify-center">
-                        <Text className="font-psemibold ml-1 text-gray">Niveau 4</Text>
-                        <View className="rounded-xl border-2 h-4 w-14 overflow-hidden bg-gray border-gray">
-                          <View className="h-full w-2/4 bg-yellow-500 rounded-l-xl">
-                          </View>
-                        </View>
-                      </View>
                     ),
+                    headerLeft: () => (
+                      <TouchableOpacity onPress={useRouter().back}>
+                        <ArrowBackIcon />
+                      </TouchableOpacity>
+                    ),
+                    headerLargeTitle: false,
+                    headerTransparent: true,
+                    headerTintColor: 'white',
                     headerStyle: {
                       backgroundColor: '#736ced',
                       borderBottomWidth: 0,
                     },
-                    headerTitle: () => (
-                      <Text></Text>
-                    ),
-                    headerRight: () => (
-                      <View className="flex-row items-center">
-                        <Text className="font-psemibold text-gray mr-2">
-                          {username}
-                        </Text>
-                        <View className="mb-1">
-                          <UserIcon />
-                        </View>
-                      </View>
-                    )
                   }} />
-              </Stack>
-            </InitialLayout>
-          </BottomSheetModalProvider>
-        </GestureHandlerRootView>
-      </SQLiteProvider>
+                  <Stack.Screen name="(tabs)"
+                    options={{
+                      headerLeft: () => (
+                        <View className="ml-4 mb-3 border-0 items-center justify-center">
+                          <Text className="font-psemibold ml-1 text-gray">Niveau 4</Text>
+                          <View className="rounded-xl border-2 h-4 w-14 overflow-hidden bg-gray border-gray">
+                            <View className="h-full w-2/4 bg-yellow-500 rounded-l-xl">
+                            </View>
+                          </View>
+                        </View>
+                      ),
+                      headerStyle: {
+                        backgroundColor: '#736ced',
+                        borderBottomWidth: 0,
+                      },
+                      headerTitle: () => (
+                        <Text></Text>
+                      ),
+                      headerRight: () => (
+                        <HeaderUsername />
+                      )
+                    }} />
+                </Stack>
+              </InitialLayout>
+            </BottomSheetModalProvider>
+          </GestureHandlerRootView>
+        </SQLiteProvider>
+      </UsernameProvider>
     </AuthProvider>
+  );
+};
+
+const HeaderUsername = () => {
+  const { username } = useUsername();
+
+  return (
+    <View className="flex-row items-center">
+      <Text className="font-psemibold text-gray mr-2">
+        {username}
+      </Text>
+      <View className="mb-1">
+        <UserIcon />
+      </View>
+    </View>
   );
 };
 

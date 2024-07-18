@@ -6,6 +6,7 @@ import CustomButton from '@/components/CustomButton';
 import { images } from '../../constants';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useUsername } from '../../utils/UserContext';
 
 export default function AddRental({ onClose, onSave }) {
   const [newRental, setNewRental] = useState({
@@ -21,16 +22,21 @@ export default function AddRental({ onClose, onSave }) {
   });
 
   const [step, setStep] = useState(1);
-
+  const { setUsername } = useUsername();
   const db = useSQLiteContext();
 
   async function updateUserAndAddNewRental() {
+    if (newRental.user_name === "")
+        newRental.user_name = "Leeser";
     try {
       // Update user
       await db.runAsync(
         'UPDATE User SET USERNAME = ?, firstTimeConnection = 0',
         [newRental.user_name]
       );
+
+      // Update the username context
+      setUsername(newRental.user_name);
 
       // Now create rental
       await db.withTransactionAsync(async () => {
