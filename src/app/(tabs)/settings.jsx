@@ -17,6 +17,7 @@ const Settings = () => {
         await db.runAsync('DELETE FROM Tenant;');
         await db.runAsync('DELETE FROM User;');
         await db.runAsync('DELETE FROM Rental;');
+        await db.runAsync('DELETE FROM UserAchievements;');
         
         // Insert a new user after deletion
         await db.runAsync('INSERT INTO User (USERNAME, firstTimeConnection) VALUES (?, ?);', ['Leesy', 1]);

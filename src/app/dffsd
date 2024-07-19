@@ -1,0 +1,12 @@
+INSERT INTO Achievements (id, name, description, condition, xp_value) VALUES
+(1, 'Proprietaire debutant', 'Acheter son premier appartement.', 'rental_count >= 1', 20),
+(2, 'Investisseur aguerri', 'Posseder 3 appartements.', 'rental_count >= 3', 40),
+(3, 'Magnat de la pierre', 'Posseder 5 appartements.', 'rental_count >= 5', 60),
+(4, 'Roi des immeubles', 'Posseder 10 appartements.', 'rental_count >= 10', 80),
+(5, 'Premiers pas', 'Ajouter son premier locataire.', 'tenant_count >= 1', 25),
+(6, 'Gestionnaire confirme', 'Avoir 5 locataires.', 'tenant_count >= 5', 50),
+(7, 'Maitre des locations', 'Avoir 10 locataires.', 'tenant_count >= 10', 75),
+(8, 'Sommet du succes', 'Avoir 20 locataires.', 'tenant_count >= 20', 100),
+(9, 'Virtuose du profit', 'Avoir genere plus de 50 000 € de revenus locatifs en un an.', 'annual_income >= 50000', 120),
+(10, 'Millionnaire', 'Avoir genere 1 000 000 € de revenus locatifs.', 'total_income >= 1000000', 150),
+(11, 'Investisseur mondial', 'Avoir des proprietes dans 2 pays differents.', 'country_count >= 2', 110),

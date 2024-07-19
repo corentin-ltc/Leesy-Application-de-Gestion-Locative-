@@ -17,6 +17,7 @@ const Achievements = () => {
 
   const fetchAchievements = async () => {
     try {
+      console.log('Fetching achievements...');
       const result = await db.getAllAsync('SELECT * FROM Achievements');
       setAchievements(result);
     } catch (error) {
@@ -26,10 +27,12 @@ const Achievements = () => {
 
   const fetchUserStats = async () => {
     try {
+      console.log('Fetching user stats...');
       const rentalCountResult = await db.getAllAsync('SELECT COUNT(*) as count FROM Rental');
       const tenantCountResult = await db.getAllAsync('SELECT COUNT(*) as count FROM Tenant');
       const incomeResult = await db.getAllAsync('SELECT SUM(amount) as total_income FROM Transactions WHERE type = "Income"');
       const countryCountResult = await db.getAllAsync('SELECT COUNT(DISTINCT country) as count FROM Rental');
+
       const rentals = rentalCountResult[0].count;
       const tenants = tenantCountResult[0].count;
       const totalIncome = incomeResult[0].total_income;
@@ -49,11 +52,15 @@ const Achievements = () => {
   };
 
   const checkAndAwardAchievements = async () => {
-    if (!userStats) return;
+    if (!userStats) {
+      return;
+    }
+
     try {
       for (let achievement of achievements) {
+
         let conditionMet = false;
-        
+
         switch (achievement.id) {
           case 1: conditionMet = userStats.rental_count >= 1; break;
           case 2: conditionMet = userStats.rental_count >= 3; break;
@@ -66,16 +73,20 @@ const Achievements = () => {
           case 9: conditionMet = userStats.annual_income >= 50000; break;
           case 10: conditionMet = userStats.total_income >= 1000000; break;
           case 11: conditionMet = userStats.country_count >= 2; break;
-          case 12: conditionMet = userStats.no_expense_6_months === 1; break;
           default: break;
         }
 
         if (conditionMet) {
           const achievementExists = await db.getAllAsync('SELECT * FROM UserAchievements WHERE achievement_id = ?', [achievement.id]);
+
           if (achievementExists.length === 0) {
             await db.runAsync('INSERT INTO UserAchievements (user_id, achievement_id, date_earned) VALUES (?, ?, ?)', [1, achievement.id, Date.now()]);
-            Alert.alert('Achievement Earned!', `You have earned the "${achievement.name}" achievement!`);
+            const newXpPoints = xpPoints + achievement.xp_value;
+            await db.runAsync('UPDATE User SET xpPoints = ? ', [newXpPoints]);
+            setXpPoints(newXpPoints);
+            Alert.alert('Achievement Earned!', `You have earned the "${achievement.name}" achievement and gained ${achievement.xp_value} XP!`);
           }
+        } else {
         }
       }
     } catch (error) {
@@ -85,8 +96,9 @@ const Achievements = () => {
 
   const addXpPoints = async () => {
     try {
+      console.log('Adding 20 XP points...');
       const newXpPoints = xpPoints + 20;
-      await db.runAsync('UPDATE User SET xpPoints = ? WHERE USER_ID = 1', [newXpPoints]);
+      await db.runAsync('UPDATE User SET xpPoints = ? ', [newXpPoints]);
       setXpPoints(newXpPoints);
       Alert.alert('Success', '20 XP points added!');
     } catch (error) {
@@ -99,7 +111,7 @@ const Achievements = () => {
     let progress = 0;
     let target = 1;
     let conditionMet = false;
-    
+
     switch (item.id) {
       case 1: target = 1; progress = userStats?.rental_count || 0; conditionMet = progress >= target; break;
       case 2: target = 3; progress = userStats?.rental_count || 0; conditionMet = progress >= target; break;
@@ -112,7 +124,6 @@ const Achievements = () => {
       case 9: target = 50000; progress = userStats?.annual_income || 0; conditionMet = progress >= target; break;
       case 10: target = 1000000; progress = userStats?.total_income || 0; conditionMet = progress >= target; break;
       case 11: target = 2; progress = userStats?.country_count || 0; conditionMet = progress >= target; break;
-      case 12: target = 1; progress = userStats?.no_expense_6_months || 0; conditionMet = progress >= target; break;
       default: break;
     }
 
@@ -121,7 +132,7 @@ const Achievements = () => {
         <View style={styles.achievementTextContainer}>
           <Text style={styles.achievementTitle}>{item.name}</Text>
           <Text style={styles.achievementDescription}>{item.description}</Text>
-          <Text style={styles.achievementProgress}>{progress}/{target}</Text>
+          <Text style={styles.achievementProgress}>{progress}/{target} - XP: {item.xp_value}</Text>
         </View>
         {conditionMet && <Icon name="trophy" size={30} color="gold" style={styles.achievementIcon} />}
       </View>
