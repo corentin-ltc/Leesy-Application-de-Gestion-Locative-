@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Image, View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '@/components/CustomButton';
@@ -18,25 +19,28 @@ export default function AddRental({ onClose, onSave }) {
     country: '',
     surface_area: '',
     rental_type: '',
-    user_name: '', // New field for user name
+    user_name: '',
+    profile_picture: null, // New field for profile picture
   });
 
   const [step, setStep] = useState(1);
-  const { setUsername } = useUsername();
+  const { setUsername, setProfilePicture } = useUsername();
   const db = useSQLiteContext();
 
   async function updateUserAndAddNewRental() {
     if (newRental.user_name === "")
-        newRental.user_name = "Leeser";
+      newRental.user_name = "Leeser";
     try {
       // Update user
+      console.log('picture:',newRental.profile_picture);
       await db.runAsync(
-        'UPDATE User SET USERNAME = ?, firstTimeConnection = 0',
-        [newRental.user_name]
+        'UPDATE User SET USERNAME = ?, firstTimeConnection = 0, profile_picture = ?',
+        [newRental.user_name, newRental.profile_picture]
       );
 
       // Update the username context
       setUsername(newRental.user_name);
+      setProfilePicture(newRental.profile_picture);
 
       // Now create rental
       await db.withTransactionAsync(async () => {
@@ -63,6 +67,25 @@ export default function AddRental({ onClose, onSave }) {
     }
   }
 
+  const pickImage = async () => {
+    let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (result.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!pickerResult.canceled) {
+      console.log("prout");
+      setNewRental({ ...newRental, profile_picture: pickerResult.assets[0].uri });
+    }
+  };
+
   return (
     <View>
       <KeyboardAvoidingView behavior='padding'>
@@ -76,6 +99,16 @@ export default function AddRental({ onClose, onSave }) {
                 onChangeText={(text) => setNewRental({ ...newRental, user_name: text })}
                 placeholder="Enter your name"
               />
+              <TouchableOpacity onPress={pickImage}>
+                <Text style={styles.label}>Upload Profile Picture</Text>
+                {newRental.profile_picture ? (
+                  <Image source={{ uri: newRental.profile_picture }} style={styles.profilePicture} />
+                ) : (
+                  <View style={styles.profilePicturePlaceholder}>
+                    <Ionicons name="camera" size={40} color="#736ced" />
+                  </View>
+                )}
+              </TouchableOpacity>
               <View className='justify-center w-full items-center mt-10'>
                 <CustomButton 
                   handlePress={() => setStep(2)}
@@ -193,14 +226,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
   },
-  addButton: {
-    backgroundColor: 'blue',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
+  profilePicture: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginTop: 10,
+    marginBottom: 20,
   },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 18,
+  profilePicturePlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
   },
 });

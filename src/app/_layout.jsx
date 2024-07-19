@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { SplashScreen, Stack, useRouter, useSegments, router } from 'expo-router';
 import { useFonts } from 'expo-font';
 import React, { useState, useEffect } from 'react';
@@ -11,7 +11,6 @@ import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite/next';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
 import { AuthProvider, useAuth } from "../../provider/AuthProvider";
-
 import UserIcon from '../assets/icons/UserIcon';
 import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
 import { UsernameProvider, useUsername } from '../utils/UserContext';
@@ -34,15 +33,15 @@ const loadDataBase = async () => {
   }
 };
 
-const fetchUsernameAndXpPoints = async (db, setUsername, setXpPoints) => {
+const fetchUsernameAndXpPoints = async (db, setUsername, setXpPoints, setProfilePicture) => {
   try {
-    const result = await db.getAllAsync('SELECT USERNAME, xpPoints FROM User');
+    const result = await db.getAllAsync('SELECT USERNAME, xpPoints, profile_picture FROM User');
     if (result[0].USERNAME === "")
       setUsername("Leeser");
     else 
       setUsername(result[0].USERNAME);
-    console.log(result);
     setXpPoints(result[0].xpPoints);
+    setProfilePicture(result[0].profile_picture); // Set profile picture
   } catch (error) {
     console.error('Error fetching username and xpPoints:', error);
   }
@@ -53,7 +52,7 @@ const InitialLayout = ({ children }) => {
   const segments = useSegments();
   const router = useRouter();
   const db = useSQLiteContext();
-  const { setUsername, setXpPoints } = useUsername();
+  const { setUsername, setXpPoints, setProfilePicture } = useUsername();
 
   useEffect(() => {
     if (!initialized) return;
@@ -70,12 +69,12 @@ const InitialLayout = ({ children }) => {
 
   useEffect(() => {
     const initializeUser = async () => {
-      await fetchUsernameAndXpPoints(db, setUsername, setXpPoints);
+      await fetchUsernameAndXpPoints(db, setUsername, setXpPoints, setProfilePicture);
     };
 
     initializeUser();
     
-  }, [session, db, setUsername, setXpPoints]);
+  }, [session, db, setUsername, setXpPoints, setProfilePicture]);
 
   return children;
 };
@@ -148,9 +147,7 @@ const RootLayout = () => {
                     title: '',
                     headerRight: () => (
                       <View className="flex-row items-center">
-                        <View className="mb-1">
-                          <UserIcon />
-                        </View>
+                        <HeaderUsername />
                       </View>
                     ),
                     headerLeft: () => (
@@ -193,23 +190,27 @@ const RootLayout = () => {
 };
 
 const HeaderUsername = () => {
-  const { username } = useUsername();
-
+  const { username, profilePicture } = useUsername();
+  console.log(profilePicture);
   return (
     <View className="flex-row items-center">
       <Text className="font-psemibold text-gray mr-2">
         {username}
       </Text>
-      <View className="mb-1">
-        <UserIcon />
-      </View>
+      {profilePicture ? (
+        <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+      ) : (
+        <View className="mb-1">
+          <UserIcon />
+        </View>
+      )}
     </View>
   );
 };
 
 const HeaderLevelAndProgress = () => {
   const { xpPoints } = useUsername();
-  const level = Math.floor(xpPoints / 100);
+  const level = Math.floor(xpPoints / 100) + 1;
   const xpProgress = xpPoints % 100;
 
   return (
@@ -232,5 +233,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  profilePicture: {
+    width: 35,
+    height: 35,
+    borderRadius: 15,
   },
 });

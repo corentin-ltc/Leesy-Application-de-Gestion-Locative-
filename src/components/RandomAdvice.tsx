@@ -6,15 +6,11 @@ import { images } from "../constants";
 
 const adviceList = [
   "Que faire si le locataire ne paie pas? - L'état peut se porter caution.",
-  "Pensez à souscrire à une assurance habitation pour protéger votre bien.",
   "Faites une vérification régulière de l'état de votre propriété.",
   "Pensez à gardez une trace écrite de toutes les communications avec vos locataires.",
   "Mettez en place un contrat de location clair et détaillé.",
   "Proposez des options de paiement flexibles pour vos locataires.",
   "Effectuez des contrôles de référence avant de louer à de nouveaux locataires.",
-  "Envisagez des incitations pour les locataires qui paient leur loyer à temps.",
-  "Soyez disponible et réactif aux besoins de vos locataires.",
-  "Restez informé des lois et règlements locaux en matière de location."
 ];
 
 const RandomAdvice = ({ containerStyles, textStyles, isLoading }) => {
