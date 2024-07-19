@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { SplashScreen, Stack, useRouter, useSegments } from 'expo-router';
+import { SplashScreen, Stack, useRouter, useSegments, router } from 'expo-router';
 import { useFonts } from 'expo-font';
 import React, { useState, useEffect } from 'react';
 import {
@@ -34,15 +34,17 @@ const loadDataBase = async () => {
   }
 };
 
-const fetchUsername = async (db, setUsername) => {
+const fetchUsernameAndXpPoints = async (db, setUsername, setXpPoints) => {
   try {
-    const result = await db.getAllAsync('SELECT USERNAME FROM User ');
+    const result = await db.getAllAsync('SELECT USERNAME, xpPoints FROM User');
     if (result[0].USERNAME === "")
       setUsername("Leeser");
     else 
       setUsername(result[0].USERNAME);
+    console.log(result);
+    setXpPoints(result[0].xpPoints);
   } catch (error) {
-    console.error('Error fetching username:', error);
+    console.error('Error fetching username and xpPoints:', error);
   }
 };
 
@@ -51,7 +53,7 @@ const InitialLayout = ({ children }) => {
   const segments = useSegments();
   const router = useRouter();
   const db = useSQLiteContext();
-  const { setUsername } = useUsername();
+  const { setUsername, setXpPoints } = useUsername();
 
   useEffect(() => {
     if (!initialized) return;
@@ -68,12 +70,12 @@ const InitialLayout = ({ children }) => {
 
   useEffect(() => {
     const initializeUser = async () => {
-      await fetchUsername(db, setUsername);
+      await fetchUsernameAndXpPoints(db, setUsername, setXpPoints);
     };
 
     initializeUser();
     
-  }, [session, db, setUsername]);
+  }, [session, db, setUsername, setXpPoints]);
 
   return children;
 };
@@ -81,6 +83,8 @@ const InitialLayout = ({ children }) => {
 const RootLayout = () => {
   const [dbLoaded, setDbLoaded] = useState(false);
   const [username, setUsername] = useState('');
+  const [xpPoints, setXpPoints] = useState(0);
+
   useEffect(() => {
     const initDb = async () => {
       try {
@@ -139,6 +143,7 @@ const RootLayout = () => {
                 <Stack className="bg-secondary" screenOptions={{ headerShadowVisible: false }}>
                   <Stack.Screen name="index" options={{ headerShown: false }} />
                   <Stack.Screen name="forms/AddRental" options={{ headerShown: false }} />
+                  <Stack.Screen name="achievements/Achievements" options={{ headerShown: false }} />
                   <Stack.Screen name="rental_details/[id]" options={{
                     title: '',
                     headerRight: () => (
@@ -164,13 +169,7 @@ const RootLayout = () => {
                   <Stack.Screen name="(tabs)"
                     options={{
                       headerLeft: () => (
-                        <View className="ml-4 mb-3 border-0 items-center justify-center">
-                          <Text className="font-psemibold ml-1 text-gray">Niveau 4</Text>
-                          <View className="rounded-xl border-2 h-4 w-14 overflow-hidden bg-gray border-gray">
-                            <View className="h-full w-2/4 bg-yellow-500 rounded-l-xl">
-                            </View>
-                          </View>
-                        </View>
+                        <HeaderLevelAndProgress />
                       ),
                       headerStyle: {
                         backgroundColor: '#736ced',
@@ -205,6 +204,24 @@ const HeaderUsername = () => {
         <UserIcon />
       </View>
     </View>
+  );
+};
+
+const HeaderLevelAndProgress = () => {
+  const { xpPoints } = useUsername();
+  const level = Math.floor(xpPoints / 100);
+  const xpProgress = xpPoints % 100;
+
+  return (
+    <TouchableOpacity 
+    onPress={() => router.push('../achievements/Achievements')}
+    className="ml-4 mb-3 border-0 items-center justify-center">
+      <Text className="font-psemibold ml-1 text-gray">Niveau {level}</Text>
+      <View className="rounded-xl border-2 h-4 w-14 overflow-hidden bg-gray border-gray">
+        <View className="h-full rounded-l-xl" style={{ width: `${xpProgress}%`, backgroundColor:"#12ff00" }}>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
