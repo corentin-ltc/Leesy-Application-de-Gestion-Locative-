@@ -94,7 +94,6 @@ const TabsLayout = () => {
                     color={color}
                     name="Profile"
                     focused={focused}
-                    
                 />
                 )
             }}

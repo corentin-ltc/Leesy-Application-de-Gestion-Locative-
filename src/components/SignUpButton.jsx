@@ -38,7 +38,7 @@ const CustomButton = ({ title, handlePress, containerStyles,
         className={`${textStyles} font-pregular text-base mr-7`}>
             {title}
       </Text>
-      <View className="bg-secondary-100 overflow-hidden  h-full w-12 justify-center items-center">
+      <View style={styles.arrow}>
         <Svg
         width="30px"
         height="30px"
@@ -72,6 +72,14 @@ const styles = StyleSheet.create({
     marginLeft: '4%',
     flexDirection: 'row',
     overflow: "hidden"
+  },
+  arrow:{
+    backgroundColor: '#32bea6', 
+    overflow: 'hidden',
+    height: '100%',
+    width: 48, 
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   profileImg:{
     width:30,

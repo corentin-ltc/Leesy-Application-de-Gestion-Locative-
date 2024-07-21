@@ -95,7 +95,7 @@ const useAchievements = () => {
                 type: 'info',
                 text1: 'Nouveau succès débloqué!',
                 text2: `\"${achievement.name}\" 😎`,
-                visibilityTime: 5000,
+                visibilityTime: 4000,
                 onPress: () => { router.push('../achievements/Achievements') }
               });
             }, 1000); // 1 second delay

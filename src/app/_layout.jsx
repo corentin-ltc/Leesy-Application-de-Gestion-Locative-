@@ -219,7 +219,7 @@ const HeaderLevelAndProgress = () => {
     className="ml-4 mb-3 border-0 items-center justify-center">
       <Text className="font-psemibold ml-1 mt-1 text-gray">Niveau {level}</Text>
       <View className="rounded-xl border-2 h-4 w-14 overflow-hidden bg-gray border-gray">
-        <View className="h-full rounded-l-xl" style={{ width: `${xpProgress}%`, backgroundColor:"#12ff00" }}>
+        <View className="h-full rounded-l-xl" style={{ width: `${xpProgress}%`, backgroundColor:"#32bea6" }}>
         </View>
       </View>
     </TouchableOpacity>
