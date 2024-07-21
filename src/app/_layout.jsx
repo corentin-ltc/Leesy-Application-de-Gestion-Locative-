@@ -61,10 +61,8 @@ const InitialLayout = ({ children }) => {
     const inAuthGroup = segments[0] === '(auth)';
 
     if (session && inAuthGroup) {
-      console.log("you are logged");
       router.replace('/home');
     } else if (!session && !inAuthGroup) {
-      console.log("you are not logged");
     }
   }, [session, initialized, segments, router]);
 

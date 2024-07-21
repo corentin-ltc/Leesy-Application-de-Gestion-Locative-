@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     marginLeft: '4%',
     flexDirection: 'row',
-    position:'absolute',
     alignItems: 'center', // Center vertically
   },
   logo: {

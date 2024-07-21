@@ -84,7 +84,6 @@ export default function AddRental({ onClose, onSave }) {
     });
 
     if (!pickerResult.canceled) {
-      console.log("prout");
       setNewRental({ ...newRental, profile_picture: pickerResult.assets[0].uri });
     }
   };
@@ -94,16 +93,31 @@ export default function AddRental({ onClose, onSave }) {
       <KeyboardAvoidingView behavior='padding'>
         <SafeAreaView>
           {step === 1 && (
-            <View style={styles.container}>
-              <Text style={styles.label}>User Name</Text>
+            <View >
+            <View id="Logo_and_text" className='flex-row justify-between items-start'>
+            <View className="flex-row flex-1 justify-center items-center ml-4 mt-14 rounded-lg p-2 border-primary border-2"> 
+              <Text className='flex-wrap text-center flex-1 font-pmedium'>
+                Commençons par faire connaissance.
+              </Text>
+            </View>
+            <Image 
+              source={images.logo}
+              className="w-[115px] h-[100px] mt-7"
+              resizeMode='contain'
+            />
+          </View>
+              <View className='ml-6 mr-6 flex my-auto flex-grow mt-5'>
+
+          <Text className='font-pregular text-xl mb-2'>Prénom</Text>
+
               <TextInput
                 style={styles.input}
                 value={newRental.user_name}
                 onChangeText={(text) => setNewRental({ ...newRental, user_name: text })}
-                placeholder="Enter your name"
+                placeholder="Leeser"
               />
               <TouchableOpacity onPress={pickImage}>
-                <Text style={styles.label}>Upload Profile Picture</Text>
+                <Text style={styles.label}>Photo</Text>
                 {newRental.profile_picture ? (
                   <Image source={{ uri: newRental.profile_picture }} style={styles.profilePicture} />
                 ) : (
@@ -112,6 +126,7 @@ export default function AddRental({ onClose, onSave }) {
                   </View>
                 )}
               </TouchableOpacity>
+               </View>
               <View className='justify-center w-full items-center mt-10'>
                 <CustomButton 
                   handlePress={() => setStep(2)}
@@ -123,9 +138,6 @@ export default function AddRental({ onClose, onSave }) {
           )}
           {step === 2 && (
             <>
-              <TouchableOpacity className="ml-4" onPress={onClose}>
-                <Ionicons name="close-circle" size={40} color="#736ced" />
-              </TouchableOpacity>
               <View id="Logo_and_text" className='flex-row justify-between items-start'>
                 <View className="flex-row flex-1 justify-center items-center ml-4 mt-14 rounded-lg p-2 border-primary border-2"> 
                   <Text className='flex-wrap text-center flex-1 font-pmedium'>

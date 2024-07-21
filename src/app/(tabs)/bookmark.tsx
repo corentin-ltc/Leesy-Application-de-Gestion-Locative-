@@ -60,12 +60,12 @@ export default function Bookmark() {
   }
 
   return (
-    <View className="h-full bg-primary">
+    <View className="h-full bg-secondary">
+      <View className="w-full h-16 bg-primary items-center justify-center">
+        <Text className="font-psemibold text-3xl text-white">Vos biens</Text>
+      </View>
       <ScrollView>
         <View className="bg-secondary h-full w-full">
-          <View className="w-full h-16 bg-primary items-center justify-center">
-            <Text className="font-psemibold text-3xl text-white">Vos biens</Text>
-          </View>
           <View className="flex-row flex-wrap mt-6">
             {rentals.map((rental) => (
               <PropertyCard 
@@ -78,8 +78,6 @@ export default function Bookmark() {
               />
             ))}
           </View>
-          <View className="bg-secondary h-full mt-52"></View>
-          <View className="bg-secondary h-full mt-52"></View>
         </View>
       </ScrollView>
       <BottomSheetModal

@@ -11,21 +11,34 @@ const CustomButton = ({ title, handlePress, containerStyles,
     <TouchableOpacity 
         onPress={handlePress}
         activeOpacity={0.8}
-        className={`rounded-xl min-h-[62px] items-center justify-center
+        className={`rounded-xl min-h-[62px] items-center justify-between
           ${containerStyles} ${isLoading ? 'opacity-80' : ''}`} 
           disabled={isLoading}
           style={styles.card}
           >
-      <Image 
-        source={images.logo}
-        className="w-[80px] h-[80px] mr-5"
-        resizeMode='contain'
-        />
+        <View className='ml-4 '>
+       <Svg
+      height="50px"
+      width="50px"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      xmlSpace="preserve"
+    >
+      <Path
+        d="M256 0C177.328 82.672 46.672 64 46.672 64v224C46.672 420 256 512 256 512s209.328-92 209.328-224V64S334.672 82.672 256 0z"
+        fill="#32bea6"
+      />
+      <Path
+        d="M240.88 355.664L148.048 283.152 167.728 257.936 233.632 309.376 340.576 151.888 367.04 169.856z"
+        fill="#fff"
+      />
+       </Svg>
+       </View>
       <Text 
         className={`${textStyles} font-pregular text-base mr-7`}>
             {title}
       </Text>
-      <View className="bg-primary overflow-hidden h-2/5 rounded-full justify-center">
+      <View className="bg-secondary-100 overflow-hidden  h-full w-12 justify-center items-center">
         <Svg
         width="30px"
         height="30px"
@@ -53,18 +66,12 @@ const styles = StyleSheet.create({
     height:100,
     width:"92%",
     backgroundColor:"white",
-    borderRadius:15,
-    borderColor:'#000',
-    padding:10,
-    elevation:10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    position: 'absolute',
+    borderRadius: 10,
+    borderColor:'#32bea6',
+    borderWidth: 2,
     marginLeft: '4%',
     flexDirection: 'row',
-
+    overflow: "hidden"
   },
   profileImg:{
     width:30,

@@ -46,17 +46,19 @@ export default function Home() {
   }
 
   return (
-    <View className="h-full bg-primary">
+    <View className="h-full bg-secondary">
+      <View className="w-full h-16 bg-primary justify-center items-center">
+      <Text className="font-psemibold text-3xl text-white">Vue d'ensemble</Text>
+      </View>
       <ScrollView contentContainerStyle={{ height: '100%' }}>
-        <View className="bg-secondary h-full">
+        <View className="bg-secondary h-full mt-6">
           <View className="w-full h-full">
-            <View style={{ zIndex: 1 }}>
+            <View>
               {!user ? (
                 <SignUpButton
                   title="Sauvegardez vos données en créant un compte!"
                   handlePress={handlePresentModal}
                   textStyles="w-48 ml-3"
-                  containerStyles="mt-2"
                 />
               ) : (
                 <RandomAdvice
@@ -89,8 +91,6 @@ export default function Home() {
                 </View>
               </BottomSheetModal>
             </View>
-            <View className="w-full h-16 bg-primary"></View>
-            <View className="w-full h-16 bg-secondary"></View>
             <View></View>
             <View className="justify-center items-center">
               <GlobalSummaryChart />
