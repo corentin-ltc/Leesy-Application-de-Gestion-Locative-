@@ -1,5 +1,4 @@
-// AddRental.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Image, View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { useNavigation } from 'expo-router';
@@ -8,8 +7,7 @@ import CustomButton from '@/components/CustomButton';
 import { images } from '../../constants';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { checkAndAwardAchievements } from '../achievements/Achievements'; // Import the function
-import { useUsername } from '../../utils/UserContext';
+import useAchievements from '../achievements/achievementsUtils'; // Import the custom hook
 
 export default function AddRental({ onClose }) {
   const [newRental, setNewRental] = useState({
@@ -23,53 +21,9 @@ export default function AddRental({ onClose }) {
     rental_type: '',
   });
 
-  const navigation = useNavigation(); // Hook from expo-router to get navigation object
-  const { xpPoints, setXpPoints } = useUsername(); // Access context
-  const [userStats, setUserStats] = useState(null);
-  const [achievements, setAchievements] = useState([]);
-
+  const navigation = useNavigation();
   const db = useSQLiteContext();
-
-  useEffect(() => {
-    fetchUserStats();
-    fetchAchievements();
-  }, []);
-
-  const fetchUserStats = async () => {
-    try {
-      console.log('Fetching user stats...');
-      const rentalCountResult = await db.getAllAsync('SELECT COUNT(*) as count FROM Rental');
-      const tenantCountResult = await db.getAllAsync('SELECT COUNT(*) as count FROM Tenant');
-      const incomeResult = await db.getAllAsync('SELECT SUM(amount) as total_income FROM Transactions WHERE type = "Income"');
-      const countryCountResult = await db.getAllAsync('SELECT COUNT(DISTINCT country) as count FROM Rental');
-
-      const rentals = rentalCountResult[0].count;
-      const tenants = tenantCountResult[0].count;
-      const totalIncome = incomeResult[0].total_income;
-      const countries = countryCountResult[0].count;
-
-      setUserStats({
-        rental_count: rentals,
-        tenant_count: tenants,
-        total_income: totalIncome,
-        country_count: countries,
-        annual_income: totalIncome, // Assuming annual income is same as total income for simplicity
-        no_expense_6_months: 0 // Placeholder, implement logic for no expenses in last 6 months
-      });
-    } catch (error) {
-      console.error('Error fetching user stats:', error);
-    }
-  };
-
-  const fetchAchievements = async () => {
-    try {
-      console.log('Fetching achievements...');
-      const result = await db.getAllAsync('SELECT * FROM Achievements');
-      setAchievements(result);
-    } catch (error) {
-      console.error('Error fetching achievements:', error);
-    }
-  };
+  const { fetchUserStats, awardAchievements } = useAchievements(); // Destructure the functions from the custom hook
 
   async function addNewRental() {
     await db.withTransactionAsync(async () => {
@@ -88,7 +42,7 @@ export default function AddRental({ onClose }) {
       );
     });
     await fetchUserStats(); // Fetch updated stats
-    await checkAndAwardAchievements(db, xpPoints, setXpPoints, userStats, achievements); // Call the function after adding rental
+    await awardAchievements(); // Call the function after adding rental
     onClose();
   }
 
@@ -96,9 +50,9 @@ export default function AddRental({ onClose }) {
     <View>
       <KeyboardAvoidingView behavior='padding'>
         <SafeAreaView>
-            <TouchableOpacity className="ml-4 "onPress={onClose}>
-              <Ionicons name="close-circle" size={40} color="#736ced" />
-            </TouchableOpacity>
+          <TouchableOpacity className="ml-4 "onPress={onClose}>
+            <Ionicons name="close-circle" size={40} color="#736ced" />
+          </TouchableOpacity>
           <View id="Logo_and_text" className='flex-row justify-between items-start'>
             <View className="flex-row flex-1 justify-center items-center ml-4 mt-14 rounded-lg p-2 border-primary border-2"> 
               <Text className='flex-wrap text-center flex-1 font-pmedium'>

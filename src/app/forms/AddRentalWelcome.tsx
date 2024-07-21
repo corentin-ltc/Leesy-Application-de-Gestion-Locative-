@@ -8,6 +8,7 @@ import { images } from '../../constants';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUsername } from '../../utils/UserContext';
+import useAchievements from '../achievements/achievementsUtils'; // Import the custom hook
 
 export default function AddRental({ onClose, onSave }) {
   const [newRental, setNewRental] = useState({
@@ -26,6 +27,7 @@ export default function AddRental({ onClose, onSave }) {
   const [step, setStep] = useState(1);
   const { setUsername, setProfilePicture } = useUsername();
   const db = useSQLiteContext();
+  const { fetchUserStats, awardAchievements } = useAchievements(); // Destructure the functions from the custom hook
 
   async function updateUserAndAddNewRental() {
     if (newRental.user_name === "")
@@ -61,7 +63,8 @@ export default function AddRental({ onClose, onSave }) {
 
       // Call the onSave function to handle post-save actions
       if (onSave) onSave();
-
+      await fetchUserStats(); // Fetch updated stats
+      await awardAchievements(); // Call the function after adding rental
     } catch (error) {
       console.error('Error updating user or creating rental:', error);
     }

@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScrollView } from 'react-native-gesture-handler';
 import { images } from '../../constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import useAchievements from '../achievements/achievementsUtils'; 
 import CustomButton from '@/components/CustomButton';
 
 export default function AddTenant({ rentalId, onClose }) {
@@ -64,6 +65,7 @@ export default function AddTenant({ rentalId, onClose }) {
       moveInDate.setMonth(moveInDate.getMonth() + 1);
     }
   };
+  const { fetchUserStats, awardAchievements } = useAchievements(); // Destructure the functions from the custom hook
 
   async function addNewTenant() {
     if (!validateInputs()) return;
@@ -85,6 +87,8 @@ export default function AddTenant({ rentalId, onClose }) {
     });
 
     await generateMonthlyIncomes(tenantId);
+    await fetchUserStats(); // Fetch updated stats
+    await awardAchievements(); // Call the function after adding rental
     onClose();
   }
 

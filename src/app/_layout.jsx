@@ -144,6 +144,7 @@ const RootLayout = () => {
                   <Stack.Screen name="index" options={{ headerShown: false }} />
                   <Stack.Screen name="forms/AddRental" options={{ headerShown: false }} />
                   <Stack.Screen name="achievements/Achievements" options={{ headerShown: false }} />
+                  <Stack.Screen name="achievements/achievementsUtils" options={{ headerShown: false }} />
                   <Stack.Screen name="rental_details/[id]" options={{
                     title: '',
                     headerRight: () => (

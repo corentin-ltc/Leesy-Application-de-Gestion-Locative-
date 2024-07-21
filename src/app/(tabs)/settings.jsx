@@ -4,11 +4,13 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../../provider/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useSQLiteContext } from 'expo-sqlite/next';
+import { useUsername } from '../../utils/UserContext'; // Import the useUsername hook
 
 const Settings = () => {
   const { signOut } = useAuth();
   const router = useRouter();
   const db = useSQLiteContext();
+  const { setUsername, setXpPoints, setProfilePicture } = useUsername(); // Destructure the context functions
 
   const deleteAllData = async () => {
     try {
@@ -36,6 +38,10 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     await deleteAllData();
+    // Reset the UserContext values
+    setUsername('');
+    setXpPoints(0);
+    setProfilePicture(null);
     signOut();
     router.replace('/');
   };
@@ -45,7 +51,7 @@ const Settings = () => {
       <Text style={styles.header}>Settings</Text>
       
       <TouchableOpacity style={styles.item}>
-        <Text style={styles.itemText}>Paramètres du compte</Text>
+        <Text style={styles.itemText}>Paramètres du profil</Text>
       </TouchableOpacity>
       
       <TouchableOpacity style={styles.item}>
