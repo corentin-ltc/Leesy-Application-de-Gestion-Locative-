@@ -47,9 +47,10 @@ const Settings = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Settings</Text>
-      
+    <View>
+            <View className="w-full h-16 bg-primary justify-center items-center">
+            <Text className="font-psemibold text-3xl text-white">Réglages</Text>
+            </View>      
       <TouchableOpacity style={styles.item}>
         <Text style={styles.itemText}>Paramètres du profil</Text>
       </TouchableOpacity>
@@ -109,9 +110,11 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    width: 50
   },
   itemText: {
     fontSize: 18,
+    fontFamily: "Poppins-Regular"
   },
 });
 
