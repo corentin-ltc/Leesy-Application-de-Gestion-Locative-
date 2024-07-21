@@ -14,6 +14,7 @@ import { AuthProvider, useAuth } from "../../provider/AuthProvider";
 import UserIcon from '../assets/icons/UserIcon';
 import ArrowBackIcon from '../assets/icons/ArrowBackIcon';
 import { UsernameProvider, useUsername } from '../utils/UserContext';
+import Toast from 'react-native-toast-message';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -180,6 +181,7 @@ const RootLayout = () => {
                       )
                     }} />
                 </Stack>
+                <Toast />
               </InitialLayout>
             </BottomSheetModalProvider>
           </GestureHandlerRootView>

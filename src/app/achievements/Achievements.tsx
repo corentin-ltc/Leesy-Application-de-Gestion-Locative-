@@ -5,6 +5,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { useUsername } from '../../utils/UserContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router'
+import Toast from 'react-native-toast-message'
 
 export const checkAndAwardAchievements = async (db, xpPoints, setXpPoints, userStats, achievements) => {
   if (!userStats) {
@@ -38,7 +40,13 @@ export const checkAndAwardAchievements = async (db, xpPoints, setXpPoints, userS
           const newXpPoints = xpPoints + achievement.xp_value;
           await db.runAsync('UPDATE User SET xpPoints = ? ', [newXpPoints]);
           setXpPoints(newXpPoints);
-          Alert.alert('Achievement Earned!', `You have earned the "${achievement.name}" achievement and gained ${achievement.xp_value} XP!`);
+          Toast.show({
+            type: 'info',
+            text1: 'Nouveau succès débloqué!',
+            text2: `\"${achievement.name}\" 😎`,
+            visibilityTime: 5000,
+            onPress: ()=> {router.push('../achievements/Achievements')}
+          });
         }
       }
     }
@@ -99,19 +107,6 @@ const Achievements = () => {
       console.error('Error fetching user stats:', error);
     }
   };
-
-  // const addXpPoints = async () => {
-  //   try {
-  //     console.log('Adding 20 XP points...');
-  //     const newXpPoints = xpPoints + 20;
-  //     await db.runAsync('UPDATE User SET xpPoints = ? ', [newXpPoints]);
-  //     setXpPoints(newXpPoints);
-  //     Alert.alert('Success', '20 XP points added!');
-  //   } catch (error) {
-  //     console.error('Error updating xpPoints:', error);
-  //     Alert.alert('Error', 'Failed to add XP points.');
-  //   }
-  // };
 
   const renderAchievement = ({ item }) => {
     let progress = 0;
