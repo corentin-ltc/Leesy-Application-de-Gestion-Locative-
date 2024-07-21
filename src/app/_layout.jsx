@@ -191,7 +191,6 @@ const RootLayout = () => {
 
 const HeaderUsername = () => {
   const { username, profilePicture } = useUsername();
-  console.log(profilePicture);
   return (
     <View className="flex-row items-center">
       <Text className="font-psemibold text-gray mr-2">
@@ -217,7 +216,7 @@ const HeaderLevelAndProgress = () => {
     <TouchableOpacity 
     onPress={() => router.push('../achievements/Achievements')}
     className="ml-4 mb-3 border-0 items-center justify-center">
-      <Text className="font-psemibold ml-1 text-gray">Niveau {level}</Text>
+      <Text className="font-psemibold ml-1 mt-1 text-gray">Niveau {level}</Text>
       <View className="rounded-xl border-2 h-4 w-14 overflow-hidden bg-gray border-gray">
         <View className="h-full rounded-l-xl" style={{ width: `${xpProgress}%`, backgroundColor:"#12ff00" }}>
         </View>

@@ -1,8 +1,51 @@
+// Achievements.js
 import { StyleSheet, Text, View, Button, Alert, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { useUsername } from '../../utils/UserContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+export const checkAndAwardAchievements = async (db, xpPoints, setXpPoints, userStats, achievements) => {
+  if (!userStats) {
+    return;
+  }
+
+  try {
+    for (let achievement of achievements) {
+      let conditionMet = false;
+
+      switch (achievement.id) {
+        case 1: conditionMet = userStats.rental_count >= 1; break;
+        case 2: conditionMet = userStats.rental_count >= 3; break;
+        case 3: conditionMet = userStats.rental_count >= 5; break;
+        case 4: conditionMet = userStats.rental_count >= 10; break;
+        case 5: conditionMet = userStats.tenant_count >= 1; break;
+        case 6: conditionMet = userStats.tenant_count >= 5; break;
+        case 7: conditionMet = userStats.tenant_count >= 10; break;
+        case 8: conditionMet = userStats.tenant_count >= 20; break;
+        case 9: conditionMet = userStats.annual_income >= 50000; break;
+        case 10: conditionMet = userStats.total_income >= 1000000; break;
+        case 11: conditionMet = userStats.country_count >= 2; break;
+        default: break;
+      }
+
+      if (conditionMet) {
+        const achievementExists = await db.getAllAsync('SELECT * FROM UserAchievements WHERE achievement_id = ?', [achievement.id]);
+
+        if (achievementExists.length === 0) {
+          await db.runAsync('INSERT INTO UserAchievements (user_id, achievement_id, date_earned) VALUES (?, ?, ?)', [1, achievement.id, Date.now()]);
+          const newXpPoints = xpPoints + achievement.xp_value;
+          await db.runAsync('UPDATE User SET xpPoints = ? ', [newXpPoints]);
+          setXpPoints(newXpPoints);
+          Alert.alert('Achievement Earned!', `You have earned the "${achievement.name}" achievement and gained ${achievement.xp_value} XP!`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error checking and awarding achievements:', error);
+  }
+};
 
 const Achievements = () => {
   const db = useSQLiteContext();
@@ -14,6 +57,12 @@ const Achievements = () => {
     fetchAchievements();
     fetchUserStats();
   }, []);
+
+  useEffect(() => {
+    if (userStats) {
+      checkAndAwardAchievements(db, xpPoints, setXpPoints, userStats, achievements);
+    }
+  }, [userStats]);
 
   const fetchAchievements = async () => {
     try {
@@ -51,61 +100,18 @@ const Achievements = () => {
     }
   };
 
-  const checkAndAwardAchievements = async () => {
-    if (!userStats) {
-      return;
-    }
-
-    try {
-      for (let achievement of achievements) {
-
-        let conditionMet = false;
-
-        switch (achievement.id) {
-          case 1: conditionMet = userStats.rental_count >= 1; break;
-          case 2: conditionMet = userStats.rental_count >= 3; break;
-          case 3: conditionMet = userStats.rental_count >= 5; break;
-          case 4: conditionMet = userStats.rental_count >= 10; break;
-          case 5: conditionMet = userStats.tenant_count >= 1; break;
-          case 6: conditionMet = userStats.tenant_count >= 5; break;
-          case 7: conditionMet = userStats.tenant_count >= 10; break;
-          case 8: conditionMet = userStats.tenant_count >= 20; break;
-          case 9: conditionMet = userStats.annual_income >= 50000; break;
-          case 10: conditionMet = userStats.total_income >= 1000000; break;
-          case 11: conditionMet = userStats.country_count >= 2; break;
-          default: break;
-        }
-
-        if (conditionMet) {
-          const achievementExists = await db.getAllAsync('SELECT * FROM UserAchievements WHERE achievement_id = ?', [achievement.id]);
-
-          if (achievementExists.length === 0) {
-            await db.runAsync('INSERT INTO UserAchievements (user_id, achievement_id, date_earned) VALUES (?, ?, ?)', [1, achievement.id, Date.now()]);
-            const newXpPoints = xpPoints + achievement.xp_value;
-            await db.runAsync('UPDATE User SET xpPoints = ? ', [newXpPoints]);
-            setXpPoints(newXpPoints);
-            Alert.alert('Achievement Earned!', `You have earned the "${achievement.name}" achievement and gained ${achievement.xp_value} XP!`);
-          }
-        } else {
-        }
-      }
-    } catch (error) {
-      console.error('Error checking and awarding achievements:', error);
-    }
-  };
-
-  const addXpPoints = async () => {
-    try {
-      console.log('Adding 20 XP points...');
-      const newXpPoints = xpPoints + 20;
-      await db.runAsync('UPDATE User SET xpPoints = ? ', [newXpPoints]);
-      setXpPoints(newXpPoints);
-      Alert.alert('Success', '20 XP points added!');
-    } catch (error) {
-      console.error('Error updating xpPoints:', error);
-      Alert.alert('Error', 'Failed to add XP points.');
-    }
-  };
+  // const addXpPoints = async () => {
+  //   try {
+  //     console.log('Adding 20 XP points...');
+  //     const newXpPoints = xpPoints + 20;
+  //     await db.runAsync('UPDATE User SET xpPoints = ? ', [newXpPoints]);
+  //     setXpPoints(newXpPoints);
+  //     Alert.alert('Success', '20 XP points added!');
+  //   } catch (error) {
+  //     console.error('Error updating xpPoints:', error);
+  //     Alert.alert('Error', 'Failed to add XP points.');
+  //   }
+  // };
 
   const renderAchievement = ({ item }) => {
     let progress = 0;
@@ -140,16 +146,15 @@ const Achievements = () => {
   };
 
   return (
-    <View style={styles.container}>
+    
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Achievements</Text>
-      <Button title="Add 20 XP Points" onPress={addXpPoints} />
-      <Button title="Check Achievements" onPress={checkAndAwardAchievements} />
       <FlatList
         data={achievements}
         renderItem={renderAchievement}
         keyExtractor={(item) => item.id.toString()}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
