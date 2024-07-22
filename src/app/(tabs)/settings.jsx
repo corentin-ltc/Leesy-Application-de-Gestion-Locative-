@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    width: 50
   },
   itemText: {
     fontSize: 18,
