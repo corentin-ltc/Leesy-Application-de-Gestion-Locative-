@@ -19,18 +19,35 @@ import Toast from 'react-native-toast-message';
 SplashScreen.preventAutoHideAsync();
 
 const loadDataBase = async () => {
+  const localFolder = FileSystem.documentDirectory + 'SQLite';
   const dbName = 'SQLiteDB.db';
-  const dbAsset = require('../assets/SQLiteDB.db');
-  const dbUri = Asset.fromModule(dbAsset).uri;
-  const dbFilePath = `${FileSystem.documentDirectory}SQLite/${dbName}`;
+  const localURI = localFolder + '/' + dbName;
 
-  const fileInfo = await FileSystem.getInfoAsync(dbFilePath);
-  if (!fileInfo.exists) {
-    await FileSystem.makeDirectoryAsync(
-      `${FileSystem.documentDirectory}SQLite`,
-      { intermediates: true }
-    );
-    await FileSystem.downloadAsync(dbUri, dbFilePath);
+  const folderInfo = await FileSystem.getInfoAsync(localFolder);
+  if (!folderInfo.exists) {
+    await FileSystem.makeDirectoryAsync(localFolder, { intermediates: true });
+  }
+
+  let asset = Asset.fromModule(require('../assets/SQLiteDB.db'));
+
+  if (!asset.downloaded) {
+    await asset.downloadAsync();
+  }
+
+  let remoteURI = asset.localUri || asset.uri;
+
+  if (asset.localUri || asset.uri.startsWith('asset') || asset.uri.startsWith('file')) {
+    await FileSystem.copyAsync({
+      from: remoteURI,
+      to: localURI,
+    }).catch(error => {
+      console.log('local copyDatabase - finished with error: ' + error);
+    });
+  } else if (asset.uri.startsWith('http') || asset.uri.startsWith('https')) {
+    await FileSystem.downloadAsync(remoteURI, localURI)
+      .catch(error => {
+        console.log('local downloadAsync - finished with error: ' + error);
+      });
   }
 };
 

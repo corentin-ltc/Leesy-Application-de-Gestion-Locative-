@@ -19,6 +19,7 @@ const Settings = () => {
         await db.runAsync('DELETE FROM Tenant;');
         await db.runAsync('DELETE FROM User;');
         await db.runAsync('DELETE FROM Rental;');
+        await db.runAsync('DELETE FROM Achievements;');
         await db.runAsync('DELETE FROM UserAchievements;');
         
         // Insert a new user after deletion
@@ -47,11 +48,11 @@ const Settings = () => {
   };
 
   return (
-    <View>
+    <View className="justify-center items-center" >
             <View className="w-full h-16 bg-primary justify-center items-center">
             <Text className="font-psemibold text-3xl text-white">Réglages</Text>
             </View>      
-      <TouchableOpacity style={styles.item}>
+      <TouchableOpacity className="mt-4" style={styles.item}>
         <Text style={styles.itemText}>Paramètres du profil</Text>
       </TouchableOpacity>
       
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    width: 320
   },
   itemText: {
     fontSize: 18,
