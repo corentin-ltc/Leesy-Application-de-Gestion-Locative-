@@ -8,8 +8,8 @@ const Premium = () => {
   return (
     <View className="justify-center items-center h-full">
       <Image
-        source={images.logo}
-        className="w-[150px] h-[150px] mt-7"
+        source={images.workspace}
+        className="w-[350px] h-[350px]"
         resizeMode='contain'
       />
       <Text className="font-pregular text-center w-3/4">

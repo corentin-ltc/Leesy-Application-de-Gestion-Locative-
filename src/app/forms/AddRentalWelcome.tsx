@@ -360,7 +360,6 @@ export default function AddRental({ onClose, onSave }) {
               </View>
             </>
           )}
-          <Button title="Retrieve Error Log" onPress={retrieveErrorLog} />
         </SafeAreaView>
       </KeyboardAvoidingView>
     </View>
