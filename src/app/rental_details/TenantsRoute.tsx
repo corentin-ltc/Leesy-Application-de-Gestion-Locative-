@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, Text } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite/next';
 import { useFocusEffect } from '@react-navigation/native';
 import AddButton from '../../components/AddButton';
 import AddTenant from '../forms/AddTenant';
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import TenantCard from '@/components/TenantCard';
+import { images } from "../../constants";
+
 
 const TenantsRoute = ({ rentalId }) => {
   const db = useSQLiteContext();
@@ -48,16 +50,32 @@ const TenantsRoute = ({ rentalId }) => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
-        <View style={styles.container}>
-          {tenants.map((tenant) => (
-            <TenantCard
-              key={tenant.id}
-              tenant={tenant}
-              deleteTenant={handleDeleteTenant}
-              handlePress={() => {}}
+        {tenants.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+              Vous n'avez pas encore ajouter de locataires.
+            </Text>
+            <Image
+              source={images.tenants}
+              style={styles.image}
+              resizeMode='contain'
             />
-          ))}
-        </View>
+            <Text style={styles.emptyText}>
+              Cliquez en bas à droite pour en ajouter !
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.container}>
+            {tenants.map((tenant) => (
+              <TenantCard
+                key={tenant.id}
+                tenant={tenant}
+                deleteTenant={handleDeleteTenant}
+                handlePress={() => {}}
+              />
+            ))}
+          </View>
+        )}
       </ScrollView>
       <BottomSheetModal
         ref={bottomSheetModalRef}
@@ -79,6 +97,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  image: {
+    width: 300,
+    height: 300,
+  },
+  emptyText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 20,
+    fontFamily: "Poppins-Regular"
   },
 });
 
