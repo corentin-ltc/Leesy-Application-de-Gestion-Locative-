@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TouchableOpacity,
   useWindowDimensions,
   View,
   Image,
@@ -88,6 +89,9 @@ export default function Home() {
                     }}
                   />
                   <Auth />
+                  <TouchableOpacity>
+                  <Text>S'inscrire avec Google</Text>
+                  </TouchableOpacity>
                 </View>
               </BottomSheetModal>
             </View>

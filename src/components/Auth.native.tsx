@@ -1,6 +1,7 @@
 import { Platform } from 'react-native'
 import * as AppleAuthentication from 'expo-apple-authentication'
 import { supabase } from 'config/initSupabase'
+import { View, Text } from 'react-native'
 
 export function Auth() {
   if (Platform.OS === 'ios')
@@ -44,5 +45,9 @@ export function Auth() {
         }}
       />
     )
-  return <>{/* Implement Android Auth options. */}</>
+  return 
+    <View>
+      <Text className='text-black'> OH LA PUTE </Text>
+    </View>
+  
 }

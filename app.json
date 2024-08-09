@@ -29,7 +29,8 @@
       ],
       "expo-apple-authentication",
       "expo-asset",
-      "expo-secure-store"
+      "expo-secure-store",
+      "@react-native-google-signin/google-signin"
     ],
     "name": "Leesy",
     "slug": "leesy"
